@@ -7,7 +7,7 @@
 Config get_env_variables() 
 {
     Config config;
-    static int aux_env[3];
+    int aux_env[3];
     char err_msg[256] = "\n Environment variable missing. Assuming fallback value of 10";
 
     aux_env[0] = atoi(getenv("MAX_PROMOTOR"));
@@ -35,6 +35,8 @@ Config get_env_variables()
 int main(){ 
 
     Config conf = get_env_variables();
+
+    printf("PROMOTOR %d \n users %d \n auctions %d", conf.max_promotors_allowed, conf.max_users_allowed, conf.max_auctions_active);
 
     return 0;
 }

@@ -1,3 +1,5 @@
+#!/bin/sh
+
 export MAX_PROMOTOR=10
 export MAX_USERS=20
 export MAX_ACTIVE_AUCTIONS=30

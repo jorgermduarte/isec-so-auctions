@@ -1,10 +1,7 @@
-#include <stdio.h>
-#include "item.h"
-
 typedef struct User {
-	char[50] username;
-	char[50] password;
+	char username[50];
+	char password[50];
 	int budget;
-	Item[10] items_for_sale;
-	Item[10] items_bought;
+	Item items_for_sale[10];
+	Item items_bought[10]; 
 } User;

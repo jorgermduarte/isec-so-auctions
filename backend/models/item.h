@@ -1,11 +1,11 @@
 #include <stdio.h>
 
 typedef struct Item {
-	char[50] name;
-	char[50] category;
+	char name[50];
+	char category[50];
 	int current_value;
 	int buy_now_value;
 	int duration;
-	char[50] seller_name;
-	char[50] bidder_name;
+	char seller_name[50];
+	char bidder_name[50];
 } Item;

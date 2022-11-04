@@ -2,6 +2,6 @@
 
 
 typedef struct Promotor {
-	char[50] name;
+	char name[50];
 } Promotor;
 

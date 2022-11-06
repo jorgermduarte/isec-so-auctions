@@ -7,14 +7,14 @@
 int main( int argc, char* argv[] )
 {
 
-	// todo: migrate this logic to a method in the future. 
+	// TODO: migrate this logic to a method in the future. 
 	// for now this just needs to validate input syntax in every method.
 	// JOKA take this from here if you want! 
 	char command[CMD_BUF_SIZE];
 
     while (1)
     {
-        scanf("$> %s", command);
+        scanf("%s", command);
         int cmdLen = strlen(command);
 
         if (contains(command, "list")) {

@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include "../models/backend.h"
 
 // Client commands handlers
 void sell_item_in_auction(Backend app, char *command);

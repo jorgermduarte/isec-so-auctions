@@ -26,15 +26,17 @@ Promotor *load_promotors_from_file(char *filename)
 
 Backend *bootstrap()
 {
-    Backend backend;
-    malloc(&backend, sizeof(Backend));
+    Backend app;
+    malloc(&app, sizeof(Backend));
 
     Config config = get_env_variables();
 
-    backend->config = config;
-    backend->users = load_users_from_file("put_filename_here");
-    backend->promotors = load_promotors_from_file("put_filename_here");
+    app->config = config;
+    app->users = load_users_from_file("put_filename_here");
+    app->promotors = load_promotors_from_file("put_filename_here");
 
+    pthread_create(&backend.threads.pthread_backend_commands, NULL, command_thread_handler, &app);
+    
     // TODO: finish this logic setting up every structure for the functioning of backend,
     // this must be an adaptation of a singleton class
 }

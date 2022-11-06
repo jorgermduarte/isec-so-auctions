@@ -23,6 +23,16 @@ void get_current_budget(Backend app, char *command);
 void add_budget(Backend app, char *command);
 
 // Backend commands handler
+void list_users(Backend app, char *command);
 
+void kick_user(Backend app, char *command);
+
+void list_promotors(Backend app, char *command);
+
+void update_promotors(Backend app, char *command);
+
+void cancel_promotor(Backend app, char *command);
+
+void close_platform(Backend app, char *command);
 
 // Promotor commands handler

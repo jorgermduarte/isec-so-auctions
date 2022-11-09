@@ -38,3 +38,4 @@ void cancel_promotor(Backend app, char *command);
 void close_platform(Backend app, char *command);
 
 // Promotor commands handler
+

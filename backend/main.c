@@ -23,11 +23,11 @@ int main(int argc, char *argv[])
     // pipe 
     // fork
     // execl -> background process or new window -- probably new window is better
-    Promotor promotor;
+    Promotor[10] promotor;
     for (int i = 0; i < 1; i++)
     {
         pipe(promotor.fd);
-        int fork_id = fork()
+        int fork_id = fork();
         if(fork_id) {
             promotor.pid = fork_id; 
             close(1);
@@ -36,15 +36,29 @@ int main(int argc, char *argv[])
             close(promotor.fd[1]);
             close(promotor.fd[0]);
 
-            // todo: make execl here? 
+            // todo: make execl here? YESSSSSS
+
             // understanding select is also needed for this
+            exit(0);
         } else {
-            // making parent process listen the commands from promotor
-        }
+        
+            // question -> we need one pipe per promotor? yes
+            // question -> we need to use selects and have a thread or the main thread checking if some of the promotor filedescriptors
+            //          -> have something to read 
+            // answer -> basically we will have a do while that will have a enourmos if for each of the promotor.. since hey have a maximum of 10
+            // there will be 10 stuffs
+
             
+
+
+            // making parent process listen the commands from promotor
+            // basically we need to have a infinite loop with select checking here on parent
+            // while 1
+            // then:
+            //      if (FD_ISSET(promotor.fd[1])))
+        }
     }
 
-    
 
     return 1;
 }

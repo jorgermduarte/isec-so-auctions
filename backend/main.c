@@ -33,12 +33,12 @@ int main(int argc, char *argv[])
             close(1);
             dup(promotor.fd[1]);
             close(promotor.fd[1]);
-            close(promotor.fd[1]);
             close(promotor.fd[0]);
 
             // todo: make execl here? YESSSSSS
 
             // understanding select is also needed for this
+            // select é efetuado no processo pai 
             exit(0);
         } else {
         
@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
         }
     }
 
+    
 
     return 1;
 }

@@ -25,8 +25,7 @@ int main(int argc, char *argv[])
 
     pipe(promotor->fd);
     int fork_id = fork();
-    if(fork_id) {
-        promotor->pid = fork_id;
+    if(fork_id == 0) {
         close(1);
         dup(promotor->fd[1]);
         close(promotor->fd[1]);
@@ -35,12 +34,22 @@ int main(int argc, char *argv[])
         execl("promotor", "promotor", (char*)NULL);
 
         exit(0);
-    } else {
-        
-        char buffer[100];
-        //close(promotor.fd[])
-        int size = read(promotor->fd[1], buffer, sizeof(buffer));
-        printf("[Promoter - p%d] sended the following message : %s", promotor->pid, buffer);
+    } else if (fork_id > 0) {
+        promotor->pid = fork_id;
+        close(promotor->fd[1]);
+        char buffer[20] = "\0";
+        while(1) {
+            int size = read(promotor->fd[0], buffer, sizeof(buffer));
+            
+            if (strstr(buffer, "exit"))
+            {
+                    printf("\nExiting....");
+                    exit(0);
+            }
+                
+            printf("\n[Promoter - p%d] sended the following message : %s", promotor->pid, buffer);    
+            memset(buffer, 0, sizeof(buffer));
+        }
         
 
         // question -> we need one pipe per promotor? yes

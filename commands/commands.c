@@ -1,6 +1,8 @@
 #include "commands.h"
 
-void list_all_items(Backend *app, char *command) {}
+void list_all_items(Backend *app, char *command) {
+    printf("\n List Users command\n");
+}
 
 void list_users(Backend *app, char *command) {}
 

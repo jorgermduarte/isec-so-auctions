@@ -1,7 +1,10 @@
 #include <stdbool.h>
-
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include<stdarg.h>
 
 void set_random();
 
-bool contains( char *str[], char* substr[] );
-
+void printToCoordinates(int x, int y, const char *format, ...);

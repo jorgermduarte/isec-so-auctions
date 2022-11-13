@@ -48,7 +48,9 @@ void *command_thread_handler(void *pdata)
 
     while (1)
     {
-        scanf("$> %s", command);
+        //printToCoordinates(200, 200, "%s", "$> ");
+        printf("$> ");
+        scanf("%s", command);
         int cmdLen = strlen(command);
 
         if (strstr((char*)command, "list")) {
@@ -68,6 +70,6 @@ void *command_thread_handler(void *pdata)
         } else {
             printf("Command unavailable \n");
         }
-        
+        fflush(stdout);
     }
 }

@@ -5,7 +5,7 @@ clean:
 all: server client
 
 server:
-	gcc -o server -pthread backend/main.c backend/backend.c commands/commands.c config/config.c
+	gcc -o server -pthread backend/main.c backend/backend.c commands/commands.c config/config.c helpers/helpers.c
 	
 
 client:

@@ -6,20 +6,12 @@ void set_random()
     srand(time(NULL));
 }
 
-bool contains( char *str[], char* substr[] )
+void printToCoordinates(int x, int y, const char *format, ...)
 {
-    bool isPresent = false;
-    for (int i = 0; str[i] != '\0'; i++) {
-        isPresent = false;
-        for (int j = 0; substr[j] != '\0'; j++) {
-            if (str[i + j] != substr[j]) {
-                isPresent = false;
-                break;
-            }
-            isPresent = true;
-        }
-        if (isPresent) break;
-    }
-
-    return isPresent;
+    va_list args;
+    va_start(args, format);
+    printf("\033[%d;%dH", x, y);
+    vprintf(format, args);
+    va_end(args);
+    fflush(stdout);
 }

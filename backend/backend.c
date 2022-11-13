@@ -1,7 +1,8 @@
-#include "../models/backend.h"
+#include <pthread.h>
+#include <string.h>
 #include "../helpers/constants.h"
 #include "../helpers/helpers.h"
-#include "./commands/commands.h"
+#include "../commands/commands.h"
 
 Item *load_items_from_file(char *filename)
 {
@@ -26,16 +27,15 @@ Promotor *load_promotors_from_file(char *filename)
 
 Backend *bootstrap()
 {
-    Backend app;
-    malloc(&app, sizeof(Backend));
+    Backend *app = malloc(sizeof(Backend));
 
-    Config config = get_env_variables();
+    Config *config = get_env_variables();
 
     app->config = config;
     app->users = load_users_from_file("put_filename_here");
     app->promotors = load_promotors_from_file("put_filename_here");
 
-    pthread_create(&backend.threads.pthread_backend_commands, NULL, command_thread_handler, &app);
+    pthread_create(&app->threads.pthread_backend_commands, NULL, command_thread_handler, &app);
     
     // TODO: finish this logic setting up every structure for the functioning of backend,
     // this must be an adaptation of a singleton class
@@ -51,19 +51,19 @@ void *command_thread_handler(void *pdata)
         scanf("$> %s", command);
         int cmdLen = strlen(command);
 
-        if (contains(command, "list")) {
+        if (strstr((char*)command, "list")) {
             list_all_items(app, command);
-        } else if (contains(command, "users")) {
+        } else if (strstr((char*)command, "users")) {
             list_users(app, command);
-        } else if (contains(command, "kick")) {
+        } else if (strstr((char*)command, "kick")) {
             kick_user(app, command);
-        } else if (contains(command, "prom")) {
+        } else if (strstr((char*)command, "prom")) {
             list_promotors(app, command);
-        } else if (contains(command, "reprom")) {
+        } else if (strstr((char*)command, "reprom")) {
             update_promotors(app, command);
-        } else if (contains(command, "cancel")) {
+        } else if (strstr((char*)command, "cancel")) {
             cancel_promotor(app, command);
-        } else if (contains(command, "close")) {
+        } else if (strstr((char*)command, "close")) {
             close_platform(app, command);
         } else {
             printf("Command unavailable \n");

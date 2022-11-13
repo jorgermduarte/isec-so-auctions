@@ -4,9 +4,9 @@
 #include "config.h"
 
 
-Config get_env_variables() 
+Config *get_env_variables() 
 {
-    Config config;
+    Config *config = malloc(sizeof(Config));
     int aux_env[3];
     char err_msg[256] = "\n Environment variable missing. Assuming fallback value of 10";
 
@@ -23,20 +23,9 @@ Config get_env_variables()
     }
       
 
-    config.max_promotors_allowed = aux_env[0];
-    config.max_users_allowed = aux_env[1];
-    config.max_auctions_active = aux_env[2];
+    config->max_promotors_allowed = aux_env[0];
+    config->max_users_allowed = aux_env[1];
+    config->max_auctions_active = aux_env[2];
     
     return config;
-}
-
-
-// this main method is for test purposes
-int main(){ 
-
-    Config conf = get_env_variables();
-
-    printf("PROMOTOR %d \n users %d \n auctions %d", conf.max_promotors_allowed, conf.max_users_allowed, conf.max_auctions_active);
-
-    return 0;
 }

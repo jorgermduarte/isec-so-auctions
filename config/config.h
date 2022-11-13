@@ -5,5 +5,5 @@ typedef struct Config {
 } Config;
 
 
-Config get_env_variables();
+Config *get_env_variables();
 

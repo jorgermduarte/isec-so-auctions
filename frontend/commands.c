@@ -8,7 +8,6 @@ int verify_is_number(char* t){
             is_number = 0;
         }
     }
-
     return is_number;
 }
 

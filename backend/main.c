@@ -17,13 +17,13 @@ int main(int argc, char *argv[])
     // to the backend directory
     app = bootstrap();
     
-    // temp promotor array
+    
     char* promotors[50] = {"blackfriday"};
-    // TODO: loop through promotors available and create:
     // pipe 
     // fork
     // execl -> background process or new window -- probably new window is better
-    Promotor[10] promotor;
+    Promotor promotor;
+    malloc(&promotor, sizeof(Promotor))
     for (int i = 0; i < 1; i++)
     {
         pipe(promotor.fd);

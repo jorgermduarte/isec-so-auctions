@@ -1,16 +1,15 @@
 #include "./commands.h"
 #include "ctype.h"
 
-int verify_is_number(char* string){
+int verify_is_number(char* t){
     int is_number = 1;
-    while(string != '\0'){
-        if(isdigit(*string))
-            string++;
-        else{
+    for (t; *t != '\0'; t++) {
+        if(!isdigit(*t)){
             is_number = 0;
-            break;
         }
     }
+
+    return is_number;
 }
 
 void exec_command_list(){

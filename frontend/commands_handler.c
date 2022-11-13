@@ -30,11 +30,6 @@ struct string_list* get_command_arguments(char *command){
     printf("    > Arguments received:\n");
     while (argument != NULL)
     {
-
-        //TODO: clean the argument value, i noticed that the exit comand required the \n to work
-        //this is probably applying to the last argument too and could cause problems in the future
-        //soo basically we need to implement a "clean-up" function that removes the \n from the arguments
-
         //verify  the max arguments that we want to grab from the input
         if(arguments_number < MAX_ARGUMENTS_COMMAND){
             printf("        - %s\n", argument);
@@ -99,7 +94,7 @@ int command_try_execution(char* command, struct string_list* arguments){
         exec_command_cash();
     }else if(command_validate_name(command,"add")){
         exec_command_add(arguments);
-    }else if(command_validate_name(command,"exit\n")){
+    }else if(command_validate_name(command,"exit")){
         printf("     > closing the application...\n");
         //todo: inform the backend that we are disconnecting
         exit = 1;
@@ -110,20 +105,18 @@ int command_try_execution(char* command, struct string_list* arguments){
 }
 
 void command_handler_start(){
-    char *buffer;
-    size_t bufsize = 255; //TODO: replace 255 to CMD_BUF_SIZE
-    size_t characters;
-
-    buffer = (char *)malloc(bufsize * sizeof(char));
-    if( buffer == NULL)
-    {
-        perror("Unable to allocate buffer");
-        exit(1);
-    }
+    size_t bufsize = 255;
+    char buffer[bufsize];
 
     printf(" > Command: ");
-    characters = getline(&buffer,&bufsize,stdin);
+    fgets(buffer,bufsize,stdin);
     printf("    > Command received: %s", buffer);
+
+    //remove a possible added \n
+    size_t len = strlen(buffer);
+    if (buffer[len - 1] == '\n') {  // FAILS when len == 0
+        buffer[len -1] = '\0';
+    }
 
     struct string_list* arguments = get_command_arguments(buffer);
 

@@ -1,9 +1,12 @@
 clean:
-	$(RM)  frontend
+	$(RM) client
+	$(RM) server
 
-all:
+all: server client
 
-backend:
+server:
+	
 
-client: #frontend
-	gcc -o client ./frontend/main.c ./frontend/commands_handler.c ./frontend/commands.c -I.
+client:
+	gcc -o client frontend/main.c frontend/commands_handler.c frontend/commands.c 
+

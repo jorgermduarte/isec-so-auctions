@@ -17,15 +17,14 @@ int main(int argc, char *argv[])
     // to the backend directory
     app = bootstrap();
     
-    // temp promotor array
+    
     char* promotors[50] = {"blackfriday"};
-    // TODO: loop through promotors available and create:
     // pipe 
     // fork
     // execl -> background process or new window -- probably new window is better
-    Promotor[10] promotor;
-    for (int i = 0; i < 1; i++)
-    {
+    Promotor promotor;
+    malloc(&promotor, sizeof(Promotor));
+
         pipe(promotor.fd);
         int fork_id = fork();
         if(fork_id) {
@@ -57,9 +56,6 @@ int main(int argc, char *argv[])
             // then:
             //      if (FD_ISSET(promotor.fd[1])))
         }
-    }
-
-    
 
     return 1;
 }

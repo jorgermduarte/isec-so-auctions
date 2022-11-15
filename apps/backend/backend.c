@@ -1,5 +1,6 @@
 #include <pthread.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "../../shared/helpers/constants.h"
 #include "../../shared/helpers/helpers.h"
 #include "./commands/initializer.h"
@@ -15,13 +16,61 @@ Item *load_items_from_file(char *filename) {
     Item *item_list;
 
     file = fopen(filename, "r");
-    if (NULL == file){
+    if (NULL == file) {
         perror("\nError opening items file. Exiting with status");
         exit(EXIT_FAILURE);
     }
 
     while ((read = getline(&line, &len, file)) != -1) {
-        printf("%s", line);
+        size_t len = strlen(line);
+
+        if (len > 1) {
+            //remove a possible added \n
+            if (line[len - 1] == '\n') {  // FAILS when len == 0
+                line[len - 1] = '\0';
+            }
+        }
+
+
+        printf("    > reading next line: %s\n", line);
+
+        struct string_list *arguments = get_command_arguments(line);
+
+        if (arguments != NULL) {
+
+            Item *item = malloc(sizeof(Item));
+
+            item->identifier = malloc(strlen(arguments->string) + 1);
+            item->name = malloc(strlen(arguments->next->string) + 1);
+            item->category = malloc(strlen(arguments->next->next->string) + 1);
+            item->seller_name = malloc(strlen(arguments->next->next->next->next->next->next->string) + 1);
+            item->bidder_name = malloc(strlen(arguments->next->next->next->next->next->next->next->string) + 1);
+
+            strcpy(item->identifier, arguments->string);
+            strcpy(item->name, arguments->next->string);
+            strcpy(item->category,arguments->next->next->string);
+            strcpy(item->seller_name, arguments->next->next->next->next->next->next->string);
+            strcpy(item->bidder_name, arguments->next->next->next->next->next->next->next->string);
+
+            item->current_value = atoi(arguments->next->next->next->string);
+            item->buy_now_value = atoi(arguments->next->next->next->next->string);
+            item->duration = atoi(arguments->next->next->next->next->next->string);
+
+            total++;
+
+            printf("    > added item to the list\n");
+            printf("    > name: %s, bidder name: %s, current value: %d \n", item->name, item->bidder_name, item->current_value);
+            item_list = realloc(item_list, sizeof(struct Item) * total);
+
+            item_list[total - 1] = *item;
+
+        } else {
+            //blank line (i think)
+            printf("  blank line detected ...! \n");
+        }
+
+        // clean the arguments list memory
+        clean_linked_list(arguments);
     }
 
     for (int i = 0;i < total; i++) {
@@ -34,42 +83,38 @@ Item *load_items_from_file(char *filename) {
     return item_list;
 }
 
-User *load_users_from_file(char *filename)
-{
+User *load_users_from_file(char *filename) {
     // TODO: import library from professor and read file name, importing users
 
     return NULL;
 }
 
-Promotor *load_promotors_from_file(char *filename)
-{
+Promotor *load_promotors_from_file(char *filename) {
     // TODO: import library from professor and read file name, importing promotors
 
     return NULL;
 }
 
-Backend *bootstrap()
-{
-    Backend* app = malloc(sizeof(Backend));
+Backend *bootstrap() {
+    Backend *app = malloc(sizeof(Backend));
 
     Config *config = get_env_variables();
 
     app->config = config;
-    app->users = load_users_from_file("put_filename_here");
-    app->promotors = load_promotors_from_file("put_filename_here");
+    app->items = load_items_from_file(app->config->f_items);
+    //app->promotors = load_promotors_from_file("put_filename_here");
 
     pthread_create(&app->threads.pthread_backend_commands, NULL, command_thread_handler, &app);
-    
+
     // TODO: finish this logic setting up every structure for the functioning of backend,
     // this must be an adaptation of a singleton class
 
     return app;
 }
 
-void *command_thread_handler(void *pdata)
-{
+void *command_thread_handler(void *pdata) {
     //TODO: right now we are not doing anything with the Backend app structure
-    Backend *app = (Backend *)pdata;
+    Backend *app = (Backend *) pdata;
     //initialize the logic to receive command inputs
     command_handler_start();
 }

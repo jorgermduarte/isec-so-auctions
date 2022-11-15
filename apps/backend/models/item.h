@@ -1,8 +1,9 @@
 #include <stdio.h>
 
 typedef struct Item {
-	char name[50];
-	char category[50];
+    char* identifier;
+	char* name;
+	char* category;
 	int current_value;
 	int buy_now_value;
 	int duration;

@@ -16,6 +16,7 @@ typedef struct Backend
 {
     Config *config;
     Auction *auctions;
+    Item *items;
     Promotor *promotors;
     User *users;
 

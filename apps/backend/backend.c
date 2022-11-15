@@ -94,12 +94,8 @@ Backend *bootstrap() {
 
     app->config = config;
     app->items = load_items_from_file(app->config->f_items);
-    //app->promotors = load_promotors_from_file("put_filename_here");
 
     pthread_create(&app->threads.pthread_backend_commands, NULL, command_thread_handler, &app);
-
-    // TODO: finish this logic setting up every structure for the functioning of backend,
-    // this must be an adaptation of a singleton class
 
     return app;
 }

@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
-#include "../models/item.h"
-#include "../models/user.h"
-#include "../models/promotor.h"
-#include "../models/auction.h"
-#include "../config/config.h"
+#include "item.h"
+#include "user.h"
+#include "promotor.h"
+#include "auction.h"
+#include "../../../shared/config/config.h"
 
 typedef struct Threads
 {

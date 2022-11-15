@@ -1,4 +1,5 @@
 #include <pthread.h>
+#include <stdio.h>
 #include "../../shared/helpers/constants.h"
 #include "../../shared/helpers/helpers.h"
 #include "./commands/initializer.h"
@@ -6,9 +7,23 @@
 
 Item *load_items_from_file(char *filename)
 {
-    // TODO: import library from professor and read file name, importing items
+    FILE * file;
+    char * line = NULL;
+    size_t len = 0;
+    ssize_t read;
 
-    return NULL;
+    file = fopen(filename, "r");
+    if (NULL == file){
+        perror("\nError opening items file. Exiting with status");
+        exit(EXIT_FAILURE);
+    }
+
+    while ((read = getline(&line, &len, file)) != -1) {
+        printf("%s", line);
+    }
+
+    fclose(file);
+    return 0;
 }
 
 User *load_users_from_file(char *filename)
@@ -27,7 +42,7 @@ Promotor *load_promotors_from_file(char *filename)
 
 Backend *bootstrap()
 {
-    Backend *app = malloc(sizeof(Backend));
+    Backend* app = malloc(sizeof(Backend));
 
     Config *config = get_env_variables();
 
@@ -39,6 +54,8 @@ Backend *bootstrap()
     
     // TODO: finish this logic setting up every structure for the functioning of backend,
     // this must be an adaptation of a singleton class
+
+    return app;
 }
 
 void *command_thread_handler(void *pdata)

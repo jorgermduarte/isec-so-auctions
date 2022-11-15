@@ -24,13 +24,13 @@ no backend.
   - [ ] Leitura do ficheiro dos itens à venda. Os dados serão lidos e interpretados. Não se trata de apenas ler e
       imprimir um ficheiro de texto - os valores inteiros serão armazenados e mostrados como inteiros.
 
-  - [ ] A verificação da funcionalidade dos comandos / execução do promotor / utilizadores / itens será feira por
+  - [x] A verificação da funcionalidade dos comandos / execução do promotor / utilizadores / itens será feira por
       opção do utilizador: a função main irá perguntar algo como “deseja testar que funcionalidade?”.
     
 
 ## Frontend / Backend: 
 
-  - [ ] makefile que possua os targets de compilação “all” (compilação de todos os programas), “frontend” (compilação
+  - [x] makefile que possua os targets de compilação “all” (compilação de todos os programas), “frontend” (compilação
   do programa frontend), “backend” (compilação do programa backend) e “clean” (eliminação de todos os
   ficheiros temporários de apoio à compilação e dos executáveis).
 

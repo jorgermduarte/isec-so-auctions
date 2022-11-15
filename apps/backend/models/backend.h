@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
-#include "item.h"
 #include "user.h"
 #include "promotor.h"
 #include "auction.h"

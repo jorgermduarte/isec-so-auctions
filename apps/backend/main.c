@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <string.h>
-#include <signal.h>
-#include "../models/backend.h"
+#include "commands/initializer.h"
+#include "string.h"
+#include "models/backend.h"
+
 
 Backend* app;
 

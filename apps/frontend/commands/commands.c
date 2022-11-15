@@ -1,15 +1,4 @@
 #include "./commands.h"
-#include "ctype.h"
-
-int verify_is_number(char* t){
-    int is_number = 1;
-    for (t; *t != '\0'; t++) {
-        if(!isdigit(*t)){
-            is_number = 0;
-        }
-    }
-    return is_number;
-}
 
 void exec_command_list(){
     printf("     > Executing the list command\n");

@@ -15,7 +15,7 @@ no backend.
   
   - [ ] Implementar a leitura de comandos do administrador, validando a sintaxe de todos. Os comandos não farão
   ainda nada, mas será reconhecido como válido ou inválido, incluindo parâmetros.
-  - [ ] Implementar a parte de lançamento dos promotores e recepção das suas frases. Nesta meta, apenas será
+  - [x] Implementar a parte de lançamento dos promotores e recepção das suas frases. Nesta meta, apenas será
     lançado o primeiro promotor.
     
   - [ ] Leitura e atualização dos utilizadores através da biblioteca fornecida para esse efeito. De cada vez que a

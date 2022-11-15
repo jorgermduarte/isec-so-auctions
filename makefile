@@ -1,8 +1,8 @@
 clean:
-	$(RM) client
-	$(RM) server
+	$(RM) frontend
+	$(RM) backend
 
-all: server client
+all: backend frontend
 
 server:
 	gcc -o server -pthread backend/main.c backend/backend.c commands/commands.c config/config.c helpers/helpers.c

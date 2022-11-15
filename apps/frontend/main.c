@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "./commands_handler.h"
+#include "commands/initializer.h"
 
 int main( int argc, char* argv[] )
 {

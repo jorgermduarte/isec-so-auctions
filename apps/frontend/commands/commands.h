@@ -1,5 +1,4 @@
-#include <stdio.h>
-#include "./commands_handler.h"
+#include "../../../shared/commands/commands_handler.h"
 
 void exec_command_list();
 

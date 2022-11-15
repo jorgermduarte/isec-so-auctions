@@ -3,7 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#define MAX_ARGUMENTS_COMMAND 5
+#define MAX_ARGUMENTS_COMMAND 10
 
 struct string_list{
     char* string;
@@ -15,5 +15,8 @@ void command_arguments_display(struct string_list* head);
 void command_handler_start();
 int verify_is_number(char* t);
 int command_validate_name(char* command, char* target);
+
+void clean_linked_list(struct string_list* list);
+
 
 //TODO:implement a method to clean the memory from the linked list since we are using mallocs etc

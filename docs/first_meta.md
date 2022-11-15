@@ -26,7 +26,7 @@ no backend.
 
   - [x] A verificação da funcionalidade dos comandos / execução do promotor / utilizadores / itens será feira por
       opção do utilizador: a função main irá perguntar algo como “deseja testar que funcionalidade?”.
-    
+
 
 ## Frontend / Backend: 
 
@@ -35,6 +35,8 @@ no backend.
   ficheiros temporários de apoio à compilação e dos executáveis).
 
 
+## Todo:
+    - in the load_items_from_file, make sure that the realloc is cleared latter on
 
 ## Data de entrega: Domingo, 20 de Novembro, 2022.
 

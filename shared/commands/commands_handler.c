@@ -82,3 +82,13 @@ int verify_is_number(char* t){
 
     return is_number;
 }
+
+void clean_linked_list(struct string_list* list){
+    struct string_list* p;
+    while(list != NULL){
+        p = list;
+        free(list->string);
+        list = list->next;
+        free(p);
+    }
+}

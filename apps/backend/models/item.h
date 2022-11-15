@@ -6,6 +6,6 @@ typedef struct Item {
 	int current_value;
 	int buy_now_value;
 	int duration;
-	char seller_name[50];
-	char bidder_name[50];
+	char* seller_name;
+	char* bidder_name;
 } Item;

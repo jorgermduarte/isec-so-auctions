@@ -6,7 +6,7 @@
 #include "./commands/initializer.h"
 #include "models/backend.h"
 
-Item *load_items_from_file(char *filename) {
+Item* load_items_from_file(char *filename) {
     FILE *file;
     char *line = NULL;
     size_t len = 0;
@@ -31,9 +31,6 @@ Item *load_items_from_file(char *filename) {
             }
         }
 
-
-        printf("    > reading next line: %s\n", line);
-
         struct string_list *arguments = get_command_arguments(line);
 
         if (arguments != NULL) {
@@ -57,16 +54,11 @@ Item *load_items_from_file(char *filename) {
             item->duration = atoi(arguments->next->next->next->next->next->string);
 
             total++;
-
-            printf("    > added item to the list\n");
-            printf("    > name: %s, bidder name: %s, current value: %d \n", item->name, item->bidder_name, item->current_value);
             item_list = realloc(item_list, sizeof(struct Item) * total);
-
             item_list[total - 1] = *item;
 
         } else {
-            //blank line (i think)
-            printf("  blank line detected ...! \n");
+            printf("  > blank line detected ...! \n");
         }
 
         // clean the arguments list memory
@@ -75,7 +67,7 @@ Item *load_items_from_file(char *filename) {
 
     for (int i = 0;i < total; i++) {
         Item current = item_list[i];
-        printf("identifier: %s, bidder name: %s, current value: %d \n", current.identifier, current.bidder_name,
+        printf("    -> identifier: %s, bidder name: %s, current value: %d \n", current.identifier, current.bidder_name,
                current.current_value);
     }
 

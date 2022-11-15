@@ -15,3 +15,20 @@ void printToCoordinates(int x, int y, const char *format, ...)
     va_end(args);
     fflush(stdout);
 }
+
+void clean_item(Item* item){
+    free(item->bidder_name);
+    free(item->seller_name);
+    free(item->category);
+    free(item->identifier);
+    free(item->name);
+    free(item);
+}
+
+//TODO: Not sure if it is right (verify later)
+void clean_list_item(Item* item){
+    while(item != NULL){
+        clean_item(item);
+        item++;
+    }
+}

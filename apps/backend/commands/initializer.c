@@ -48,8 +48,10 @@ void command_handler_start(){
 
         command_arguments_display(arguments);
         int exit = command_try_execution(arguments->string,arguments->next);
-        if(!exit)
+        if(!exit){
+            clean_linked_list(arguments);
             command_handler_start();
+        }
     }else{
         printf("    > Invalid command provided, please try again..\n");
         command_handler_start();

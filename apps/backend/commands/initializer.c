@@ -5,21 +5,22 @@ int command_try_execution(char* command, struct string_list* arguments){
     int exit = 0;
 
     if(command_validate_name(command,"list")){
-        list_all_items(arguments);
+        exec_command_list();
     }else if(command_validate_name(command,"users")){
-        list_users(arguments);
+        exec_command_list_users();
     }else if(command_validate_name(command,"kick")){
-        kick_user(arguments);
+        exec_command_kick(arguments);
     }else if(command_validate_name(command,"prom")){
-        list_promotors(arguments);
+        exec_command_prom();
     }else if(command_validate_name(command,"reprom")){
-        update_promotors(arguments);
+        exec_command_reprom();
     }else if(command_validate_name(command,"cancel")){
-        cancel_promotor(arguments);
+        exec_command_cancel_prom(arguments);
+    }else if(command_validate_name(command,"testlib")){
+        test_users_lib();
     }else if(command_validate_name(command,"close")){
-        close_platform(arguments);
-    }else if(command_validate_name(command,"exit")){
         printf("     > closing the application...\n");
+        //TODO: notify the frontend applications that the backend is closing
         exit = 1;
     }else{
         printf("     > Couldn't find any command for: %s\n", command);
@@ -35,16 +36,22 @@ void command_handler_start(){
     fgets(buffer,bufsize,stdin);
     printf("    > Command received: %s", buffer);
 
-    //remove a possible added \n
     size_t len = strlen(buffer);
-    if (buffer[len - 1] == '\n') {  // FAILS when len == 0
-        buffer[len -1] = '\0';
-    }
 
-    struct string_list* arguments = get_command_arguments(buffer);
+    if(len > 1){
+        //remove a possible added \n
+        if (buffer[len - 1] == '\n') {  // FAILS when len == 0
+            buffer[len -1] = '\0';
+        }
 
-    command_arguments_display(arguments);
-    int exit = command_try_execution(arguments->string,arguments->next);
-    if(!exit)
+        struct string_list* arguments = get_command_arguments(buffer);
+
+        command_arguments_display(arguments);
+        int exit = command_try_execution(arguments->string,arguments->next);
+        if(!exit)
+            command_handler_start();
+    }else{
+        printf("    > Invalid command provided, please try again..\n");
         command_handler_start();
+    }
 }

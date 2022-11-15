@@ -40,16 +40,22 @@ void command_handler_start(){
     fgets(buffer,bufsize,stdin);
     printf("    > Command received: %s", buffer);
 
-    //remove a possible added \n
     size_t len = strlen(buffer);
-    if (buffer[len - 1] == '\n') {  // FAILS when len == 0
-        buffer[len -1] = '\0';
-    }
 
-    struct string_list* arguments = get_command_arguments(buffer);
+    if(len > 1){
+        //remove a possible added \n
+        if (buffer[len - 1] == '\n') {  // FAILS when len == 0
+            buffer[len -1] = '\0';
+        }
 
-    command_arguments_display(arguments);
-    int exit = command_try_execution(arguments->string,arguments->next);
-    if(!exit)
+        struct string_list* arguments = get_command_arguments(buffer);
+
+        command_arguments_display(arguments);
+        int exit = command_try_execution(arguments->string,arguments->next);
+        if(!exit)
+            command_handler_start();
+    }else{
+        printf("    > Invalid command provided, please try again..\n");
         command_handler_start();
+    }
 }

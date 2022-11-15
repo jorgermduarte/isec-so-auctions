@@ -1,15 +1,20 @@
 #include "../../../shared/commands/commands_handler.h"
 
-void list_users(struct string_list* arguments);
+//list all items
+void exec_command_list();
 
-void kick_user(struct string_list* arguments);
+void exec_command_list_users();
 
-void list_promotors(struct string_list* arguments);
+void exec_command_kick(struct string_list* arguments);
 
-void update_promotors(struct string_list* arguments);
+//list promoters
+void exec_command_prom();
 
-void cancel_promotor(struct string_list* arguments);
+//update promoters
+void exec_command_reprom();
 
-void close_platform(struct string_list* arguments);
+//cancel promoters
+void exec_command_cancel_prom(struct string_list* arguments);
 
-void list_all_items(struct string_list* arguments);
+// function used to display the tests of the user lib
+void test_users_lib();

@@ -1,25 +1,25 @@
 # Requisitos:
 
-- [ ] Planear e definir as estruturas de dados responsáveis por gerir as definições de funcionamento no frontend e
+- [X] Planear e definir as estruturas de dados responsáveis por gerir as definições de funcionamento no frontend e
 no backend. 
-- [ ] Definir os header files com constantes simbólicas e declarações associadas às estruturas de dados.
+- [X] Definir os header files com constantes simbólicas e declarações associadas às estruturas de dados.
 
 ## Frontend:
 
 - [x] implementar a parte da leitura de comandos e respetiva validação. 
   - [x] Todos os comandos devem ter a sua sintaxe validada. 
     - [x] Os comandos não farão ainda nada, mas será reconhecido como válido ou inválido, incluindo parâmetros. 
-  - [ ] Implementar a recepção das credenciais do utilizador.
+  - [X] Implementar a recepção das credenciais do utilizador.
   
 ## Backend:
   
-  - [ ] Implementar a leitura de comandos do administrador, validando a sintaxe de todos. Os comandos não farão
+  - [x] Implementar a leitura de comandos do administrador, validando a sintaxe de todos. Os comandos não farão
   ainda nada, mas será reconhecido como válido ou inválido, incluindo parâmetros.
   - [x] Implementar a parte de lançamento dos promotores e recepção das suas frases. Nesta meta, apenas será
     lançado o primeiro promotor.
     
-  - [ ] Leitura e atualização dos utilizadores através da biblioteca fornecida para esse efeito. De cada vez que a
-    funcionalidade é testada, os utilizadores perdem 1 no saldo ficando essa alteração gravada.
+  - [x] Leitura e atualização dos utilizadores através da biblioteca fornecida para esse efeito. De cada vez que a
+    funcionalidade é testada, os utilizadores perdem 1 no saldo ficando essa alteração gravada. (test_lib method)
 
   - [ ] Leitura do ficheiro dos itens à venda. Os dados serão lidos e interpretados. Não se trata de apenas ler e
       imprimir um ficheiro de texto - os valores inteiros serão armazenados e mostrados como inteiros.

@@ -30,3 +30,7 @@ User *load_users_from_file(char *filename);
 Promotor *load_promotors_from_file(char *filename);
 
 void *command_thread_handler(void *pdata);
+void clean_item(Item* item);
+
+//TODO: implement the clean up of the dynamic list of items
+// void clean_list_item(Item* item);

@@ -1,4 +1,5 @@
 #include "helpers.h"
+#include <string.h>
 
 
 void set_random()
@@ -16,19 +17,7 @@ void printToCoordinates(int x, int y, const char *format, ...)
     fflush(stdout);
 }
 
-void clean_item(Item* item){
-    free(item->bidder_name);
-    free(item->seller_name);
-    free(item->category);
-    free(item->identifier);
-    free(item->name);
-    free(item);
-}
-
-//TODO: Not sure if it is right (verify later)
-void clean_list_item(Item* item){
-    while(item != NULL){
-        clean_item(item);
-        item++;
-    }
+void set_attribute(char *attribute, char* value) {
+    attribute = malloc(strlen(value) + 1);
+    strcpy(attribute, value);
 }

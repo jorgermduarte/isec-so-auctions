@@ -36,18 +36,23 @@ Item* load_items_from_file(char *filename) {
         if (arguments != NULL) {
 
             Item *item = malloc(sizeof(Item));
+            
+            set_attribute(item->identifier, arguments->string);
+            set_attribute(item->name, arguments->next->string);
+            set_attribute(item->category,arguments->next->next->string );
+            set_attribute(item->seller_name, arguments->next->next->next->next->next->next->string);
+            set_attribute(item->bidder_name,arguments->next->next->next->next->next->next->next->string );
+            // item->identifier = malloc(strlen(arguments->string) + 1);
+            // item->name = malloc(strlen(arguments->next->string) + 1);
+            // item->category = malloc(strlen(arguments->next->next->string) + 1);
+            // item->seller_name = malloc(strlen(arguments->next->next->next->next->next->next->string) + 1);
+            // item->bidder_name = malloc(strlen(arguments->next->next->next->next->next->next->next->string) + 1);
 
-            item->identifier = malloc(strlen(arguments->string) + 1);
-            item->name = malloc(strlen(arguments->next->string) + 1);
-            item->category = malloc(strlen(arguments->next->next->string) + 1);
-            item->seller_name = malloc(strlen(arguments->next->next->next->next->next->next->string) + 1);
-            item->bidder_name = malloc(strlen(arguments->next->next->next->next->next->next->next->string) + 1);
-
-            strcpy(item->identifier, arguments->string);
-            strcpy(item->name, arguments->next->string);
-            strcpy(item->category,arguments->next->next->string);
-            strcpy(item->seller_name, arguments->next->next->next->next->next->next->string);
-            strcpy(item->bidder_name, arguments->next->next->next->next->next->next->next->string);
+            // strcpy(item->identifier, arguments->string);
+            // strcpy(item->name, arguments->next->string);
+            // strcpy(item->category,arguments->next->next->string);
+            // strcpy(item->seller_name, arguments->next->next->next->next->next->next->string);
+            // strcpy(item->bidder_name, arguments->next->next->next->next->next->next->next->string);
 
             item->current_value = atoi(arguments->next->next->next->string);
             item->buy_now_value = atoi(arguments->next->next->next->next->string);
@@ -106,3 +111,21 @@ void *command_thread_handler(void *pdata) {
     //initialize the logic to receive command inputs
     command_handler_start();
 }
+
+
+void clean_item(Item* item){
+    free(item->bidder_name);
+    free(item->seller_name);
+    free(item->category);
+    free(item->identifier);
+    free(item->name);
+    free(item);
+}
+
+//TODO: Not sure if it is right (verify later)
+// void clean_list_item(Item* item){
+//     while(item != NULL){
+//         clean_item(item);
+//         item++;
+//     }
+//}

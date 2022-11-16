@@ -99,7 +99,6 @@ Backend *bootstrap() {
 
     app->config = config;
     app->items = load_items_from_file(app->config->f_items);
-
     pthread_create(&app->threads.pthread_backend_commands, NULL, command_thread_handler, &app);
 
     return app;

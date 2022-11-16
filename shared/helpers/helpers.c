@@ -16,8 +16,3 @@ void printToCoordinates(int x, int y, const char *format, ...)
     va_end(args);
     fflush(stdout);
 }
-
-void set_attribute(char *attribute, char* value) {
-    attribute = malloc(strlen(value) + 1);
-    strcpy(attribute, value);
-}

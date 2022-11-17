@@ -63,16 +63,14 @@ void test_users_lib() {
         perror("      > User doesn't exist or his password is invalid");
         exit(1);
     }
+
     printf("      > User %s with password %s is logged in\n", username, password);
-
-
     printf("      > %s balance is %d €\n", username, getUserBalance(username));
     printf("      > Removing 1€ to balance...\n");
     if (updateUserBalance(username, getUserBalance(username) - 1) == -1)
         printf("      > %s balance is %d€\n", username, getUserBalance(username));
     else {
         perror("      > Error updating balance\n");
-
         printf("      > %s\n", getLastErrorText());
         exit(1);
     }
@@ -82,7 +80,6 @@ void test_users_lib() {
         printf("      > File saved\n");
     } else {
         perror("      > Error updating file\n");
-
         printf("      > %s\n", getLastErrorText());
         exit(1);
     }

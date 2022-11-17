@@ -9,8 +9,6 @@
 int main(int argc, char *argv[])
 {
     Backend* app = bootstrap();
-    
-    char* promotors[50] = {"blackfriday"};
     int msg_count = 0;
     
     // pipe 

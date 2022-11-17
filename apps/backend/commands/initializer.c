@@ -1,4 +1,5 @@
 #include "initializer.h"
+#include "../../../shared/helpers/helpers.h"
 
 int command_try_execution(char* command, struct string_list* arguments){
     printf("    > Verifying command existence\n");
@@ -29,6 +30,7 @@ int command_try_execution(char* command, struct string_list* arguments){
 }
 
 void command_handler_start(){
+    creset();
     size_t bufsize = 255;
     char buffer[bufsize];
 

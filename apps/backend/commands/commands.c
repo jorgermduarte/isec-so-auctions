@@ -1,4 +1,5 @@
 #include "./commands.h"
+#include "../../../shared/helpers/helpers.h"
 #include "../../../shared/config/config.h"
 #include "../../../users_lib.h"
 
@@ -42,6 +43,7 @@ void exec_command_cancel_prom(struct string_list *arguments) {
 // function used to display the tests of the user lib
 //TODO: This command is here for test purposes and for the first meta
 void test_users_lib() {
+    bbash();
     printf("     > Executing the test users lib example: \n");
 
     Config *conf = get_env_variables();
@@ -84,5 +86,5 @@ void test_users_lib() {
         printf("      > %s\n", getLastErrorText());
         exit(1);
     }
-
+    creset();
 }

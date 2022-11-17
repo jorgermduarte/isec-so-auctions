@@ -8,3 +8,9 @@
 void set_random();
 
 void printToCoordinates(int x, int y, const char *format, ...);
+
+int get_file_size(char* filename);
+
+void bbash();
+void rbash();
+void creset();

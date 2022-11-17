@@ -10,8 +10,8 @@ int main(int argc, char *argv[])
 {
     Backend* app = bootstrap();
     
-    
     char* promotors[50] = {"blackfriday"};
+    int msg_count = 0;
     
     // pipe 
     // fork
@@ -46,8 +46,24 @@ int main(int argc, char *argv[])
                 rbash();
                 printf("\n[Promoter - p%d] sended the following message : %s\033[0m", promotor->pid, buffer);    
                 creset();
+                msg_count++;
             }
             memset(buffer, 0, sizeof(buffer));
+            
+            if (msg_count == 5)
+            {
+                printf("    > Sending SIGUSR1 signal to promoter\n");
+                union sigval val;
+                val.sival_int = 0;
+                
+                sigqueue(promotor->pid, SIGUSR1, val); 
+                // sleep 10 so we can see the dead promotor in jobs
+                // exit right after
+                sleep(10);         
+                printf("    > Exiting\n");
+                exit(0);      
+            }
+            
         }
         
 

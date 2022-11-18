@@ -36,9 +36,9 @@ void command_handler_start(){
     size_t bufsize = 255;
     char buffer[bufsize];
 
-    printf(" > Command: ");
+    printf("We are listening to any commands that you may provide, just write them and press enter\n");
     fgets(buffer,bufsize,stdin);
-    printf("    > Command received: %s", buffer);
+    printf("> Command received: %s", buffer);
 
     size_t len = strlen(buffer);
 
@@ -50,14 +50,15 @@ void command_handler_start(){
 
         struct string_list* arguments = get_command_arguments(buffer);
 
-        command_arguments_display(arguments);
+        //command_arguments_display(arguments);
         int exit = command_try_execution(arguments->string,arguments->next);
         if(!exit){
+            //clean the arguments memory allocated to avoid memory leaks
             clean_linked_list(arguments);
             command_handler_start();
         }
     }else{
-        printf("    > Invalid command provided, please try again..\n");
+        printf("> Invalid command provided, please try again..\n");
         command_handler_start();
     }
 }

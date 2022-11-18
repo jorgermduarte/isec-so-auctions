@@ -27,12 +27,12 @@ struct string_list* get_command_arguments(char *command){
     char *delimiter = " ";
     char *argument = strtok(command, delimiter);
 
-    printf("    > Arguments received:\n");
+    //printf("    > Arguments received:\n");
     while (argument != NULL)
     {
         //verify  the max arguments that we want to grab from the input
         if(arguments_number < MAX_ARGUMENTS_COMMAND){
-            printf("        - %s\n", argument);
+            //printf("        - %s\n", argument);
 
             if(head == NULL){
                 head = malloc(sizeof(struct string_list));
@@ -45,9 +45,7 @@ struct string_list* get_command_arguments(char *command){
                 strcpy(new_argument->string, argument);
                 new_argument->next = NULL;
 
-                //printf("    -> setting the new child argument: %s\n", new_argument->string);
                 struct string_list* tail = get_argument_list_tail_pointer(head);
-                //printf("    -> current tail: %s\n", tail->string);
                 if(tail != NULL){
                     tail->next = new_argument;
                 }

@@ -22,7 +22,8 @@ void load_items_from_file(char *filename, Item *items)
     while ((read = getline(&line, &len, fp)) != -1)
     {
         Item it;
-        sscanf(line, "%20s %20s %20s %d %d %d %20s %20s", &it.identifier, &it.name, &it.category, &it.duration, &it.current_value, &it.buy_now_value, &it.seller_name, &it.bidder_name);
+        //the %20s is to avoid buffer overflows
+        sscanf(line, "%20s %20s %20s %d %d %d %20s %20s", it.identifier, it.name, it.category, &it.duration, &it.current_value, &it.buy_now_value, it.seller_name, it.bidder_name);
         items[i++] = it;
     }
 
@@ -38,9 +39,9 @@ User *load_users_from_file(char *filename)
     return NULL;
 }
 
-Promotor *load_promotors_from_file(char *filename)
+Promotor *load_promoters_from_file(char *filename)
 {
-    // TODO: import library from professor and read file name, importing promotors
+    // TODO: import library from professor and read file name, importing promoters
 
     return NULL;
 }

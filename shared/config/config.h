@@ -7,10 +7,11 @@ typedef struct Config {
     char *f_items;
 } Config;
 
+
 /**
  * Method that gets the specific environment variables used in the project
  *
- * @return Config*
+ * @return Config* configuration_data
  */
 Config *get_env_variables();
 

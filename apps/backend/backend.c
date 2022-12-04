@@ -7,6 +7,8 @@
 #include "../../shared/helpers/constants.h"
 
 
+//TODO: i think we should move the items list to a command !
+// it was necessary for the first meta!
 void load_items_from_file(char *filename, Item *items)
 {
     FILE *fp;

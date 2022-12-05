@@ -6,9 +6,13 @@
 #include "auction.h"
 #include "../../../shared/config/config.h"
 
+#define BNAMEFIFO "FIFOBACKEND1"
+#define FNAMEFIFO "FIFOFRONTEND"
+
 typedef struct Threads
 {
     pthread_t pthread_backend_commands;
+    pthread_t pthread_frontend_requests;
 } Threads;
 
 typedef struct Backend
@@ -20,6 +24,8 @@ typedef struct Backend
     User *users;
 
     Threads threads;
+
+    int fifo_b;
 } Backend;
 
 Backend *bootstrap();
@@ -29,3 +35,6 @@ User *load_users_from_file(char *filename);
 Promotor *load_promotors_from_file(char *filename);
 
 void *command_thread_handler(void *pdata);
+void *frontend_communication_receiver_handler(void *pdata);
+
+int copen_fifo_backend();

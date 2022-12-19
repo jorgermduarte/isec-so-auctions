@@ -7,7 +7,7 @@ typedef struct Request {
 
 
 typedef struct Response {
-    char results[256];
+    char result[256];
 } Response;
 
 typedef struct Message {

@@ -1,12 +1,19 @@
 #include "./commands.h"
+#include "../notifier.h"
 
 void exec_command_list() {
     printf("     > Executing the list command\n");
+    send_message_backend("list");
 }
 
 void exec_command_licat(struct string_list *arguments) {
     if (arguments != NULL) {
         printf("     > Executing the licat command, with the category: %s\n", arguments->string);
+
+        char message[256] = "licat ";
+        strcpy(message, arguments->string);
+        send_message_backend(message);
+
     } else {
         printf("     > Failed to execute the licat command, please provide the category name, example: licat category-name\n");
     }

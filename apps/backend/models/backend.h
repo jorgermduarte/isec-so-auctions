@@ -4,10 +4,7 @@
 #include "user.h"
 #include "promotor.h"
 #include "auction.h"
-#include "../../../shared/config/config.h"
-
-#define BNAMEFIFO "FIFOBACKEND1"
-#define FNAMEFIFO "FIFOFRONTEND"
+#include "../config/config.h"
 
 typedef struct Threads
 {
@@ -37,4 +34,4 @@ Promotor *load_promotors_from_file(char *filename);
 void *command_thread_handler(void *pdata);
 void *frontend_communication_receiver_handler(void *pdata);
 
-int copen_fifo_backend();
+void frontend_communication_fifo_initializer();

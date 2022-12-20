@@ -67,6 +67,14 @@ void *frontend_communication_receiver_handler(void *pdata)
             int size = read(fd_bfifo, &msg, sizeof(msg));
             if(size > 0) {
                 printf(" > [FRONTEND %d] [REQUESTED] %s", msg.pid, msg.request.arguments);
+
+                //handle the commands received and sed the response
+                struct string_list* arguments = get_command_arguments(msg.request.arguments);
+                int close_app = command_try_execution(arguments->string,arguments->next, msg.pid);
+                if(!close_app) {
+                    //clean the arguments memory allocated to avoid memory leaks
+                    clean_linked_list(arguments);
+                }
             }
             close(fd_bfifo);
         }

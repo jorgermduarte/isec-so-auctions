@@ -1,12 +1,12 @@
 #include "initializer.h"
 #include "../../../shared/helpers/helpers.h"
 
-int command_try_execution(char* command, struct string_list* arguments){
+int command_try_execution(char* command, struct string_list* arguments, int pid_response){
     printf("    > Verifying command existence\n");
     int exit = 0;
 
     if(command_validate_name(command,"list")){
-        exec_command_list();
+        exec_command_list(pid_response);
     }else if(command_validate_name(command,"users")){
         exec_command_list_users();
     }else if(command_validate_name(command,"kick")){
@@ -48,7 +48,7 @@ void command_handler_start(){
         struct string_list* arguments = get_command_arguments(buffer);
 
         //command_arguments_display(arguments);
-        int close_app = command_try_execution(arguments->string,arguments->next);
+        int close_app = command_try_execution(arguments->string,arguments->next,-1);
         if(!close_app){
             //clean the arguments memory allocated to avoid memory leaks
             clean_linked_list(arguments);

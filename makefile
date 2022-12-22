@@ -1,12 +1,12 @@
 clean:
-	$(RM) client
-	$(RM) server
+	$(RM) frontend
+	$(RM) backend
 
-all: server client
+all: backend frontend
 
-server:
-	
+backend:
+	gcc -o backend -pthread apps/backend/main.c apps/backend/backend.c apps/backend/commands/initializer.c apps/backend/commands/commands.c shared/commands/commands_handler.c shared/config/config.c  shared/helpers/helpers.c users_lib.o
 
-client:
-	gcc -o client frontend/main.c frontend/commands_handler.c frontend/commands.c 
+frontend:
+	gcc -o frontend apps/frontend/main.c apps/frontend/commands/initializer.c apps/frontend/commands/commands.c  shared/commands/commands_handler.c
 

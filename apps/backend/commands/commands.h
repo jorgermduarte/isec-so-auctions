@@ -3,6 +3,11 @@
 //list all items
 void exec_command_list(int pid_response);
 
+// this command is used by the frontend to get the cash of a user
+void exec_command_cash(int pid_response);
+
+void exec_command_verify_login(struct string_list* arguments, int pid_response);
+
 void exec_command_list_users();
 
 void exec_command_kick(struct string_list* arguments);

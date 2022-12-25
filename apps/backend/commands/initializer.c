@@ -7,7 +7,14 @@ int command_try_execution(char* command, struct string_list* arguments, int pid_
 
     if(command_validate_name(command,"list")){
         exec_command_list(pid_response);
-    }else if(command_validate_name(command,"users")){
+    }
+    else if(command_validate_name(command,"login") && pid_response != -1 && arguments != NULL){
+        exec_command_verify_login(arguments, pid_response);
+    }
+    else if(command_validate_name(command,"cash") && pid_response != -1){
+        exec_command_cash(pid_response);
+    }
+    else if(command_validate_name(command,"users")){
         exec_command_list_users();
     }else if(command_validate_name(command,"kick")){
         exec_command_kick(arguments);
@@ -33,9 +40,9 @@ void command_handler_start(){
     size_t bufsize = 255;
     char buffer[bufsize];
 
-    printf("We are listening to any commands that you may provide, just write them and press enter\n");
+    printf(" > [INFO] WE ARE LISTENING TO ANY COMMAND:\n");
     fgets(buffer,bufsize,stdin);
-    printf("> Command received: %s", buffer);
+    printf(" > Command received: %s", buffer);
 
     size_t len = strlen(buffer);
 

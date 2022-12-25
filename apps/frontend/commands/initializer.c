@@ -36,9 +36,9 @@ void command_handler_start() {
     size_t bufsize = 255;
     char buffer[bufsize];
 
-    printf("We are listening to any commands that you may provide, just write them and press enter\n");
+    printf(" > [INFO] WE ARE LISTENING TO ANY COMMAND:\n\n");
     fgets(buffer, bufsize, stdin);
-    printf("> Command received: %s", buffer);
+    printf(" > Command received: %s", buffer);
 
     size_t len = strlen(buffer);
 

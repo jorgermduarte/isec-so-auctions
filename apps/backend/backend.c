@@ -46,7 +46,7 @@ void frontend_communication_fifo_initializer()
     {
         if (errno == EEXIST)
         {
-            perror("\n[ERR] FIFO ALREADY EXISTS");
+            //perror("\n[ERR] FIFO ALREADY EXISTS");
         }else{
             perror("\n[ERR] ERROR WHILE CREATING FIFO");
             exit(1);

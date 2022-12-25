@@ -51,6 +51,49 @@ void exec_command_list(int pid_response) {
         free(line);
 }
 
+void exec_command_verify_login(struct string_list* arguments, int pid_response){
+    if(pid_response != -1 && arguments != NULL) {
+
+        if(arguments->string != NULL && arguments->next != NULL){
+
+            char* username = arguments->string;
+            char* password = arguments->next->string;
+
+            printf("     > Executing the verify login command\n");
+            Config *conf = get_env_variables();
+
+            int result = loadUsersFile(conf->f_users);
+            if (result != -1)
+                printf("      > Users read: %d\n", result);
+
+            int login = isUserValid(username, password);
+
+            if (login == -1) {
+                perror("      > Error validating user from file");
+            } else if (login == 0) {
+                perror("      > User doesn't exist or his password is invalid");
+            }else{
+                printf("      > User %s with password %s is logged in\n", username, password);
+                send_message_frontend("LOGIN_SUCCESS", pid_response);
+            }
+
+
+        }
+
+
+    }
+}
+
+void exec_command_cash(int pid_response){
+    printf("     > Executing the cash command \n");
+    char message_to_send[255] = "Your current money is ?? \n";
+
+    // get the cash from the user
+    // get the username based on the pid;
+
+    send_message_frontend(message_to_send, pid_response);
+}
+
 void exec_command_list_users() {
     printf("     > Executing the list users command\n");
 }

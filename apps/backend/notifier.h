@@ -1,0 +1,1 @@
+void send_message_frontend(char *message, int pid);

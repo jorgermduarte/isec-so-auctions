@@ -1,0 +1,3 @@
+nike_sapato_1 AirForce90 sapatos 60 150 60 Alex -
+nike_sapato_2 Jordan sapatos 60 150 60 Jorge -
+bmw_carro_1 M3Competition carros 30000 50000 60 Alex -

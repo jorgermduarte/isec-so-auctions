@@ -1,7 +1,7 @@
 #include "../../../shared/commands/commands_handler.h"
 
 //list all items
-void exec_command_list();
+void exec_command_list(int pid_response);
 
 void exec_command_list_users();
 

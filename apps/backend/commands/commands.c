@@ -1,11 +1,54 @@
 #include "./commands.h"
 #include "../../../shared/helpers/helpers.h"
-#include "../../../shared/config/config.h"
+#include "../config/config.h"
 #include "../../../users_lib.h"
+#include "../models/item.h"
+#include "../notifier.h"
 
 //list all items
-void exec_command_list() {
+void exec_command_list(int pid_response) {
     printf("     > Executing the list all items command\n");
+    bool sendMessagesFrontend = false;
+    if(pid_response != -1) {
+        sendMessagesFrontend = true;
+    }
+    FILE *fp;
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+    int i = 0;
+
+    fp = fopen("file_items.txt", "r");
+    if (fp == NULL)
+        exit(EXIT_FAILURE);
+
+    while ((read = getline(&line, &len, fp)) != -1)
+    {
+        Item it;
+        // the %20s is to avoid buffer overflows
+        sscanf(line, "%20s %20s %20s %d %d %d %20s %20s", it.identifier, it.name, it.category, &it.duration, &it.current_value, &it.buy_now_value, it.seller_name, it.bidder_name);
+
+        printf("     > %s %s %s %d %d %d %s %s\n", it.identifier, it.name, it.category, it.duration, it.current_value, it.buy_now_value, it.seller_name, it.bidder_name);
+
+        if(sendMessagesFrontend){
+
+            char message_to_send[255] = "";
+            strcat(message_to_send, it.identifier);
+            strcat(message_to_send, " ");
+            strcat(message_to_send, it.name);
+            strcat(message_to_send, " ");
+            strcat(message_to_send, it.category);
+            strcat(message_to_send, " ");
+            strcat(message_to_send, it.seller_name);
+
+            send_message_frontend(message_to_send, pid_response);
+        }
+
+    }
+
+    fclose(fp);
+    if (line)
+        free(line);
 }
 
 void exec_command_list_users() {

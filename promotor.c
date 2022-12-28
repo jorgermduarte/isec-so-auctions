@@ -18,7 +18,14 @@ int main( int argc, char* argv[] ) {
     printf("moveis 100 150\n");
     fflush(stdin);
     sleep(10);
-    printf("exit");
+    printf("tomates 25 60\n");
+    fflush(stdin);
+    sleep(3);
+    printf("telemoveis 10 100\n");
+    fflush(stdin);
+    sleep(10);
+    printf("carros 100 150\n");
+    exit(0);
 
     return 1;
 }

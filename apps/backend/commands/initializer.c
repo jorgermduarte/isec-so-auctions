@@ -1,3 +1,5 @@
+#include <pthread.h>
+#include <unistd.h>
 #include "initializer.h"
 #include "../../../shared/helpers/helpers.h"
 
@@ -35,13 +37,22 @@ int command_try_execution(char* command, struct string_list* arguments, int pid_
     return exit;
 }
 
-void command_handler_start(){
+void command_handler_start(Backend* app){
     creset();
     size_t bufsize = 255;
     char buffer[bufsize];
 
+    if(app->threads.running == 0){
+        pthread_exit(0);
+    }
+
     printf(" > [INFO] WE ARE LISTENING TO ANY COMMAND:\n");
     fgets(buffer,bufsize,stdin);
+
+    if(app->threads.running == 0){
+        pthread_exit(0);
+    }
+
     printf(" > Command received: %s", buffer);
 
     size_t len = strlen(buffer);
@@ -59,14 +70,15 @@ void command_handler_start(){
         if(!close_app){
             //clean the arguments memory allocated to avoid memory leaks
             clean_linked_list(arguments);
-            command_handler_start();
+            command_handler_start(app);
         }else{
-            //force close the app
-            //TODO:notify the frontend applications
-            exit(1);
+            kill(getpid(), SIGINT);
         }
     }else{
         printf("> Invalid command provided, please try again..\n");
-        command_handler_start();
+        command_handler_start(app);
     }
 }
+
+
+

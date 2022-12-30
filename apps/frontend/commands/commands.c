@@ -13,7 +13,7 @@ void exec_command_licat(struct string_list *arguments) {
         printf("     > Executing the licat command, with the category: %s\n", arguments->string);
 
         char message[256] = "licat ";
-        strcpy(message, arguments->string);
+        strcat(message, arguments->string);
         send_message_backend(message);
 
     } else {

@@ -125,6 +125,51 @@ void exec_command_exit_frontend(struct Backend *app, int pid_response)
     }
 }
 
+void exec_command_licat(struct Backend* app, int pid_response, struct string_list* arguments){
+    if(pid_response != -1 && arguments != NULL && arguments->string != NULL){
+        char* category = arguments->string;
+        printf("     > Executing the licat command with category: %s \n", category);
+
+        struct Item* currentItem = app->items;
+        int total_items = 0;
+
+        int file_item_size = get_file_size(app->config->f_items);
+
+        while( total_items < file_item_size){
+
+            //verify item category
+            if(strcmp(currentItem[total_items].category,category) == 0){
+
+                printf("    > Found item with category: %s \n", currentItem[total_items].category);
+
+                //generate message and send to the frontend application
+                struct Item item = currentItem[total_items];
+                char message_to_send[255] = "";
+
+                char currentValueString[20];
+                sprintf(currentValueString, "%d", item.current_value);
+
+                char buyNowString[20];
+                sprintf(currentValueString, "%d", item.buy_now_value);
+
+                strcat(message_to_send,item.identifier);
+                strcat(message_to_send," ");
+                strcat(message_to_send,item.name);
+                strcat(message_to_send," ");
+                strcat(message_to_send,item.category);
+                strcat(message_to_send," CBID: ");
+                strcat(message_to_send,currentValueString);
+                strcat(message_to_send," BNV: ");
+                strcat(message_to_send,buyNowString);
+
+                send_message_frontend(message_to_send, pid_response);
+            }
+            total_items++;
+        }
+    }
+}
+
+
 // ======== ONLY BACKEND COMMANDS =========
 void exec_add_money_to_user(struct Backend *app, int pid_response, struct string_list *arguments)
 {

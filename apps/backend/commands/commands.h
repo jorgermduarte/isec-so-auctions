@@ -8,10 +8,10 @@ void exec_command_cash(struct Backend* app, int pid_response);
 void exec_add_money_to_user(struct Backend* app,  int pid_response, struct string_list* arguments);
 void exec_command_time(struct Backend* app, int pid_response);
 void exec_command_exit_frontend(struct Backend* app, int pid_response);
+void exec_command_licat(struct Backend* app, int pid_response, struct string_list* arguments);
 
 //TODO: commands to implement from the frontend application
 void exec_command_buy(struct Backend* app, int pid_response, struct string_list* arguments);
-void exec_command_licat(struct Backend* app, int pid_response, struct string_list* arguments);
 void exec_command_lisel(struct Backend* app, int pid_response, struct string_list* arguments);
 void exec_command_lival(struct Backend* app, int pid_response, struct string_list* arguments);
 void exec_command_sell(struct Backend* app, int pid_response, struct string_list* arguments);

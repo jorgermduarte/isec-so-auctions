@@ -19,8 +19,11 @@ int command_try_execution(char* command, struct string_list* arguments, int pid_
     else if(command_validate_name(command,"add") && pid_response != -1 && arguments != NULL){ //only available for frontend applications
         exec_add_money_to_user(app, pid_response, arguments);
     }
+    else if(command_validate_name(command,"time") && pid_response != -1){ //only available for frontend applications
+        exec_command_time(app, pid_response);
+    }
     else if(command_validate_name(command,"users")){
-        exec_command_list_users();
+        exec_command_list_users(app);
     }else if(command_validate_name(command,"kick")){
         exec_command_kick(arguments);
     }else if(command_validate_name(command,"prom")){

@@ -5,7 +5,7 @@
 - [ ] lisel
 - [ ] lival
 - [ ] litime
-- [ ] time
+- [x] time
 - [ ] buy
 - [x] cash
 - [x] add
@@ -28,7 +28,7 @@
 - [ ] lisel
 - [ ] lival
 - [ ] litime
-- [ ] time
+- [x] time
 - [ ] buy
 - [x] cash
 - [x] add

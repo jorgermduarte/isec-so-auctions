@@ -78,6 +78,19 @@ void exec_command_verify_login(struct string_list* arguments, struct Backend* ap
     }
 }
 
+void exec_command_time(struct Backend* app, int pid_response){
+
+    if(pid_response != -1){
+        // Get the current time
+        time_t current_time = time(NULL);
+
+        // Display the current time in seconds
+        char message_to_send[255] = "";
+        sprintf(message_to_send, "%ld", current_time);
+        send_message_frontend(message_to_send, pid_response);
+    }
+}
+
 // ======== ONLY BACKEND COMMANDS =========
 void exec_add_money_to_user(struct Backend* app, int pid_response, struct string_list* arguments){
     if(arguments != NULL) {
@@ -158,8 +171,40 @@ void exec_command_kick(struct string_list *arguments) {
     }
 }
 
-void exec_command_list_users() {
+void exec_command_list_users(struct Backend* app) {
     printf("     > Executing the list users command\n");
+
+    FILE* file = fopen(app->config->f_users, "r");
+
+    // Check if the file was successfully opened
+    if (file == NULL) {
+        fprintf(stderr, "Error: failed to open file '%s'\n", app->config->f_users);
+        return;
+    }
+
+    printf("    >  Listing users from file: %s\n", app->config->f_users);
+
+    // Read the file line by line
+    char line[256];
+    int num_users = 0;
+
+    while (fgets(line, sizeof(line), file) != NULL) {
+        // Parse the line to get the username, password, and budget
+        char username[50];
+        char password[50];
+        int budget;
+        int num_scanned = sscanf(line, "%s %s %d", username, password, &budget);
+
+        if (num_scanned == 3) {
+          printf("      >  User %d: %s %s %d\n", num_users, username, password, budget);
+        }
+        num_users++;
+        if(num_users == app->config->max_users_allowed){
+            break;
+        }
+    }
+
+
 }
 
 // ======== BOTH FRONTEND AND BACKEND COMMANDS =========

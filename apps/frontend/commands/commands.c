@@ -49,6 +49,7 @@ void exec_command_litime(struct string_list *arguments) {
 //TODO: implement this command
 void exec_command_time() {
     printf("     > Executing the time command\n");
+    send_message_backend("time");
 }
 
 //TODO: implement this command

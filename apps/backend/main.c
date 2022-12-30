@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <pthread.h>
-#include <sys/time.h>
-#include <sys/types.h>
 #include <sys/select.h>
 #include "commands/initializer.h"
 #include "../../shared/helpers/helpers.h"

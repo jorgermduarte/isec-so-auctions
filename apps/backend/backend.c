@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include <time.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include "./commands/initializer.h"
@@ -26,6 +25,9 @@ Backend *bootstrap()
     Item items[file_item_size];
     load_items_from_file(app->config->f_items, &items[0]);
     app->items = items;
+
+    // load users from file
+    load_users_from_file(app->config->f_users, app);
 
     Promotor promoters[app->config->max_promotors_allowed];
     load_promoters_from_file(app->config->f_promotors, &promoters[0]);
@@ -70,6 +72,50 @@ void frontend_communication_fifo_initializer()
     }
 }
 
+void load_users_from_file(char* filename, Backend* app) {
+    // Open the file for reading
+    FILE* file = fopen(filename, "r");
+
+    User users[app->config->max_users_allowed];
+
+    // Check if the file was successfully opened
+    if (file == NULL) {
+        fprintf(stderr, "Error: failed to open file '%s'\n", filename);
+        return;
+    }
+
+    printf("    >  Loading users from file: %s\n", filename);
+
+    // Read the file line by line
+    char line[256];
+    int num_users = 0;
+    while (fgets(line, sizeof(line), file) != NULL) {
+        // Parse the line to get the username, password, and budget
+        char username[50];
+        char password[50];
+        int budget;
+        int num_scanned = sscanf(line, "%s %s %d", username, password, &budget);
+
+
+        // Check if the line was successfully parsed
+        if (num_scanned == 3) {
+            User newUser;
+            strcpy(newUser.username, username);
+            strcpy(newUser.password, password);
+            newUser.budget = budget;
+            printf("        > read: %s %s %d\n", username, password, budget);
+            users[num_users] = newUser;
+            num_users++;
+        }
+    }
+
+    // define users
+    app->users = users;
+
+    // Close the file
+    fclose(file);
+}
+
 void *frontend_communication_receiver_handler(void *pdata)
 {
     Backend *app = (Backend *)pdata;
@@ -93,7 +139,7 @@ void *frontend_communication_receiver_handler(void *pdata)
 
                 // handle the commands received and sed the response
                 struct string_list *arguments = get_command_arguments(msg.request.arguments);
-                int close_app = command_try_execution(arguments->string, arguments->next, msg.pid);
+                int close_app = command_try_execution(arguments->string, arguments->next, msg.pid, app);
                 assign_unknown_client(msg.pid, &app->frontendPids[0], app->config->max_users_allowed);                
 
                 if (!close_app)

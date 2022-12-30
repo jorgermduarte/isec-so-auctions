@@ -68,10 +68,13 @@ void exec_command_cash() {
     send_message_backend(message);
 }
 
-//TODO: implement this command
 void exec_command_add(struct string_list *arguments) {
-    if (arguments != NULL && verify_is_number(arguments->string)) {
+    if (arguments != NULL && arguments->string != NULL && verify_is_number(arguments->string)) {
         printf("     > Executing the add command, with the value: %s\n", arguments->string);
+
+        char message[256] = "add ";
+        strcat(message,  arguments->string);
+        send_message_backend(message);
     } else {
         printf("     > Failed to execute the add command, please provide a value, example: add 30\n");
     }

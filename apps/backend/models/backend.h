@@ -42,7 +42,7 @@ typedef struct Backend
 Backend* bootstrap();
 
 void load_items_from_file(char* filename, Item *items);
-User *load_users_from_file(char *filename);
+void load_users_from_file(char *filename, Backend* app);
 void *load_promoters_from_file(char *filename, Promotor *promoters);
 
 void *command_thread_handler(void *pdata);

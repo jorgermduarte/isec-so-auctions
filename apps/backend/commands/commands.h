@@ -1,25 +1,38 @@
 #include "../../../shared/commands/commands_handler.h"
 
-//list all items
-void exec_command_list(int pid_response);
+struct Backend;
+// ======== ONLY FRONTEND COMMANDS =========
+void exec_command_verify_login(struct string_list* arguments, struct Backend* app, int pid_response);
+void exec_command_cash(struct Backend* app, int pid_response);
+// update the user balance based on the username and amount to add
+void exec_add_money_to_user(struct Backend* app,  int pid_response, struct string_list* arguments);
 
-// this command is used by the frontend to get the cash of a user
-void exec_command_cash(int pid_response);
+//TODO: commands to implement from the frontend application
+void exec_command_buy(struct Backend* app, int pid_response, struct string_list* arguments);
+void exec_command_time(struct Backend* app, int pid_response);
+void exec_command_licat(struct Backend* app, int pid_response, struct string_list* arguments);
+void exec_command_lisel(struct Backend* app, int pid_response, struct string_list* arguments);
+void exec_command_lival(struct Backend* app, int pid_response, struct string_list* arguments);
+void exec_command_sell(struct Backend* app, int pid_response, struct string_list* arguments);
+void exec_command_litime(struct Backend* app, int pid_response, struct string_list* arguments);
 
-void exec_command_verify_login(struct string_list* arguments, int pid_response);
+// ======== ONLY BACKEND COMMANDS =========
+// list all items from the database / file
+void exec_command_list();
 
-void exec_command_list_users();
-
+// TODO: commands to implement from the backend application
 void exec_command_kick(struct string_list* arguments);
-
-//list promoters
+void exec_command_list_users();
+// list promoters
 void exec_command_prom();
-
-//update promoters
+// update promoters
 void exec_command_reprom();
-
-//cancel promoters
+// cancel promoter
 void exec_command_cancel_prom(struct string_list* arguments);
 
-// function used to display the tests of the user lib
-void test_users_lib();
+
+// ======== BOTH FRONTEND AND BACKEND COMMANDS =========
+
+
+
+

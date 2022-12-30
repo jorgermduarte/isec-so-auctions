@@ -9,6 +9,7 @@
 #include "../../shared/helpers/helpers.h"
 #include "../../shared/helpers/constants.h"
 #include "../../shared/models/communication.h"
+#include "../../users_lib.h"
 
 Backend *bootstrap()
 {
@@ -83,6 +84,8 @@ void load_users_from_file(char* filename, Backend* app) {
         fprintf(stderr, "Error: failed to open file '%s'\n", filename);
         return;
     }
+
+    loadUsersFile(app->config->f_users);
 
     printf("    >  Loading users from file: %s\n", filename);
 

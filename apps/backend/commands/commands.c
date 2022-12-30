@@ -46,9 +46,6 @@ void exec_command_verify_login(struct string_list* arguments, struct Backend* ap
             char* password = arguments->next->string;
             printf("     > Executing the verify login command\n");
 
-            Config *conf = get_env_variables();
-            int result = loadUsersFile(conf->f_users);
-
             int login = isUserValid(username, password);
 
             if(app != NULL){

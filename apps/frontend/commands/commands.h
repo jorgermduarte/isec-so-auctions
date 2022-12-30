@@ -18,3 +18,5 @@ void exec_command_buy(struct string_list *arguments);
 void exec_command_cash();
 
 void exec_command_add(struct string_list *arguments);
+
+void exec_command_exit();

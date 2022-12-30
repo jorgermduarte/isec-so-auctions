@@ -1,3 +1,5 @@
+#include <signal.h>
+#include <unistd.h>
 #include "./commands.h"
 #include "../models/notifier.h"
 
@@ -79,4 +81,14 @@ void exec_command_add(struct string_list *arguments) {
     } else {
         printf("     > Failed to execute the add command, please provide a value, example: add 30\n");
     }
+}
+
+void exec_command_exit()
+{
+    pid_t pid = getpid();
+    char message[256] = "exit";
+    printf("     > Executing the order to %s the frontend with pid %d", message, pid);
+    send_message_backend(message);
+
+    kill(pid, SIGINT);
 }

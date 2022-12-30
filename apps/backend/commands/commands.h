@@ -7,6 +7,7 @@ void exec_command_cash(struct Backend* app, int pid_response);
 // update the user balance based on the username and amount to add
 void exec_add_money_to_user(struct Backend* app,  int pid_response, struct string_list* arguments);
 void exec_command_time(struct Backend* app, int pid_response);
+void exec_command_exit_frontend(struct Backend* app, int pid_response);
 
 //TODO: commands to implement from the frontend application
 void exec_command_buy(struct Backend* app, int pid_response, struct string_list* arguments);

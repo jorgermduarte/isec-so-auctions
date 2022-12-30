@@ -35,6 +35,8 @@ int command_try_execution(char* command, struct string_list* arguments, int pid_
     }else if(command_validate_name(command,"close")){
         printf("     > closing the application...\n");
         exit = 1;
+    }else if(command_validate_name(command, "exit") && pid_response != -1){
+        exec_command_exit_frontend(app, pid_response);
     }else{
         printf("     > Couldn't find any command for: %s\n", command);
     }

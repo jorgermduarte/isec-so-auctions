@@ -23,9 +23,7 @@ int command_try_execution(char *command, struct string_list *arguments) {
     } else if (command_validate_name(command, "add")) {
         exec_command_add(arguments);
     } else if (command_validate_name(command, "exit")) {
-        printf("     > closing the application...\n");
-        //todo: inform the backend that we are disconnecting
-        exit = 1;
+        exec_command_exit();
     } else {
         printf("     > Couldn't find any command for: %s\n", command);
     }

@@ -13,7 +13,7 @@
 
 # backend
 
-- [ ] users
+- [x] users
 - [x] list
 - [ ] kick
 - [ ] prom

@@ -1,7 +1,7 @@
 # frontend
 
 - [ ] sell
-- [ ] licat
+- [x] licat
 - [ ] lisel
 - [ ] lival
 - [ ] litime
@@ -24,7 +24,7 @@
 # backend handle frontend commands
 
 - [ ] sell
-- [ ] licat
+- [x] licat
 - [ ] lisel
 - [ ] lival
 - [ ] litime

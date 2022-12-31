@@ -51,7 +51,7 @@ void* backend_communication_receiver_handler(void* data)
     while(client->frontend_responses.lock){
         client->fifo_fd = open(client->fifo_name,  O_RDONLY | O_NONBLOCK);
         if(client->fifo_fd == -1){
-            //printf(" > Something went wrong receiving the message from a backend application \n");
+            //printf(" > [WRN] Something went wrong receiving the message from a backend application \n");
         }else{
             int read_size = sizeof(msg) + 1;
             int size = read(client->fifo_fd, &msg, read_size);
@@ -65,8 +65,8 @@ void* backend_communication_receiver_handler(void* data)
                     printf(" > [INFO] YOU HAVE LOGGED IN SUCCESSFULLY\n");
                 }
             }
-            close(client->fifo_fd);
         }
+        close(client->fifo_fd);
     }
 }
 

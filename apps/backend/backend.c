@@ -20,12 +20,8 @@ Backend *bootstrap()
     Config *config = get_env_variables();
     app->config = config;
 
-    int file_item_size = get_file_size(app->config->f_items);
-
     // Read data from files
-    Item items[file_item_size];
-    load_items_from_file(app->config->f_items, &items[0]);
-    app->items = items;
+    load_items_from_file(app->config->f_items, app);
 
     // load users from file
     load_users_from_file(app->config->f_users, app);
@@ -170,24 +166,39 @@ void check_backend_duplicate_execution()
     }
 }
 
-void load_items_from_file(char *filename, Item *items)
+void load_items_from_file(char *filename,Backend* app)
 {
     FILE *fp;
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
-    int i = 0;
     fp = fopen(filename, "r");
     if (fp == NULL)
         exit(EXIT_FAILURE);
+
+    Item* itemsDefine;
+    int i = 0;
+
     while ((read = getline(&line, &len, fp)) != -1)
     {
+        if(i == 0){
+            itemsDefine = (Item*) malloc(sizeof(Item));
+        }
+
         Item it;
         // the %20s is to avoid buffer overflows
         sscanf(line, "%20s %20s %20s %d %d %d %20s %20s", it.identifier, it.name, it.category, &it.duration, &it.current_value, &it.buy_now_value, it.seller_name, it.bidder_name);
-        items[i++] = it;
+        itemsDefine[i] = it;
+        itemsDefine = (Item*) realloc(itemsDefine, sizeof(Item) * (i + 2));
+        printf("    >  Loading item: %s\n",it.name);
+        i++;
     }
     fclose(fp);
+
+    printf("        > Total items loaded: %d\n", i);
+
+    app->items = itemsDefine;
+
     if (line)
         free(line);
 }

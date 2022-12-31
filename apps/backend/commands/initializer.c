@@ -25,6 +25,9 @@ int command_try_execution(char* command, struct string_list* arguments, int pid_
     else if(command_validate_name(command,"licat") && pid_response != -1){ //only available for frontend applications
         exec_command_licat(app, pid_response, arguments);
     }
+    else if(command_validate_name(command,"litime") && pid_response != -1){ //only available for frontend applications
+        exec_command_litime(app, pid_response, arguments);
+    }
     else if(command_validate_name(command,"users")){
         exec_command_list_users(app);
     }else if(command_validate_name(command,"kick")){

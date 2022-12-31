@@ -39,10 +39,12 @@ void exec_command_lival(struct string_list *arguments) {
     }
 }
 
-//TODO: implement this command
 void exec_command_litime(struct string_list *arguments) {
     if (arguments != NULL && verify_is_number(arguments->string)) {
         printf("     > Executing the litime command, with the value: %s\n", arguments->string);
+        char message[256] = "litime ";
+        strcat(message, arguments->string);
+        send_message_backend(message);
     } else {
         printf("     > Failed to execute the litime command, please provide a value, example: litime 30\n");
     }

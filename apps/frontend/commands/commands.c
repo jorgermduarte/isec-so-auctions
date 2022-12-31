@@ -30,10 +30,14 @@ void exec_command_lisel(struct string_list *arguments) {
     }
 }
 
-//TODO: implement this command
 void exec_command_lival(struct string_list *arguments) {
     if (arguments != NULL && verify_is_number(arguments->string)) {
         printf("     > Executing the lival command, with the value: %s\n", arguments->string);
+
+        char message[256] = "lival ";
+        strcat(message, arguments->string);
+        send_message_backend(message);
+
     } else {
         printf("     > Failed to execute the lival command, please provide a value, example: lival 30\n");
     }

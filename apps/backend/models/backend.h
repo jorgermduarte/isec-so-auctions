@@ -14,6 +14,7 @@ typedef struct Threads
 {
     pthread_t pthread_backend_commands;
     pthread_t pthread_frontend_requests;
+    pthread_t pthread_frontend_heartbit;
     int running;
 } Threads;
 
@@ -47,10 +48,13 @@ void *load_promoters_from_file(char *filename, Promotor *promoters);
 
 void *command_thread_handler(void *pdata);
 void *frontend_communication_receiver_handler(void *pdata);
+void *frontend_heartbit_handler(void *pdata);
 
 void frontend_communication_fifo_initializer();
 void check_backend_duplicate_execution();
 
 int get_max_promoter_fd(Promotor *promoters, int size);
 void read_promoter_message(Promotor promoter, fd_set read_fds);
-int assign_unknown_client(pid_t pid, int *arr, int length);
+int assign_or_return_client_index(pid_t pid, int *arr, int length);
+
+int reset_heartbit_counter(Backend* app, pid_t pid);

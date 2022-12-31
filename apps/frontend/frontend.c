@@ -49,7 +49,7 @@ void* backend_communication_receiver_handler(void* data)
     printf(" > [INFO] FRONTEND COMMUNICATION RECEIVER HANDLER STARTED FOR PIPE: %s\n",client->fifo_name);
 
     while(client->frontend_responses.lock){
-        client->fifo_fd = open(client->fifo_name,  O_RDONLY | O_NONBLOCK);
+        client->fifo_fd = open(client->fifo_name,  O_RDWR);
         if(client->fifo_fd == -1){
             //printf(" > [WRN] Something went wrong receiving the message from a backend application \n");
         }else{
@@ -125,22 +125,22 @@ void initialize_frontend(char* username, char* password){
 
 
     // verify user authentication
-    int timeout = 5;
-    while(auth.is_logged_in == 0){
-        sleep(1);
-        if(auth.is_logged_in == 0){
-            printf(" > Verifying user authentication...\n");
-        }
-        timeout--;
-        if(timeout <= 0){
-            printf(" > Failed to authenticate the user, closing the application ...\n");
-            exit(1);
-        }
-    }
+    // int timeout = 5;
+    // while(auth.is_logged_in == 0){
+    //     sleep(1);
+    //     if(auth.is_logged_in == 0){
+    //         printf(" > Verifying user authentication...\n");
+    //     }
+    //     timeout--;
+    //     if(timeout <= 0){
+    //         printf(" > Failed to authenticate the user, closing the application ...\n");
+    //         exit(1);
+    //     }
+    // }
 
-    if(auth.is_logged_in == 1){
+    // if(auth.is_logged_in == 1){
         command_handler_start();
-    }
+    // }
 }
 
 int fifo_exists(char* filename){

@@ -27,6 +27,7 @@ void exec_command_cash(struct Backend *app, int pid_response)
                     foundUser = true;
                     target_username = current_user->username;
                 }
+                reset_heartbit_counter(app, pid_response);
                 current_user++;
                 total_users++;
             }
@@ -67,12 +68,14 @@ void exec_command_verify_login(struct string_list *arguments, struct Backend *ap
                     if (strcmp(current_user->username, username) == 0)
                     {
                         current_user->pid = pid_response;
+                        current_user->heartbit = 20;
                         printf("     > User authenticated and defined pid on the user list: %s   -> %d\n", current_user->username, current_user->pid);
                         break;
                     }
                     current_user++;
                     total_users++;
                 }
+                reset_heartbit_counter(app, pid_response);
             }
 
             if (login == -1)
@@ -99,6 +102,7 @@ void exec_command_time(struct Backend *app, int pid_response)
     {
         // Get the current time
         time_t current_time = time(NULL);
+        reset_heartbit_counter(app, pid_response);
 
         // Display the current time in seconds
         char message_to_send[255] = "";
@@ -166,6 +170,8 @@ void exec_command_licat(struct Backend* app, int pid_response, struct string_lis
             }
             total_items++;
         }
+
+        reset_heartbit_counter(app, pid_response);
     }
 }
 

@@ -39,8 +39,33 @@ Backend *bootstrap()
     app->threads.running = 1;
     pthread_create(&app->threads.pthread_backend_commands, NULL, command_thread_handler, app);
     pthread_create(&app->threads.pthread_frontend_requests, NULL, frontend_communication_receiver_handler, app);
+    pthread_create(&app->threads.pthread_frontend_heartbit, NULL, frontend_heartbit_handler, app);
 
     return app;
+}
+
+void *frontend_heartbit_handler(void *pdata)
+{
+    Backend *app = (Backend *)pdata;
+    
+    while (app->threads.running)
+    {
+        for(int i = 0; i < app->config->max_users_allowed; i++){
+            if(app->users[i].pid != -1){
+                app->users[i].heartbit--;
+
+                if(app->users[i].heartbit == 0){
+                    printf(" > Frontend %d is afk. Order its closure. \n", app->users[i].pid);
+                    kill(app->users[i].pid, SIGINT);
+                    int pos = assign_or_return_client_index(app->users[i].pid, app->frontendPids, app->config->max_users_allowed);   
+                    app->users[i].pid = -1;
+                    app->frontendPids[pos] = 0;
+                }
+            }
+        }
+
+        sleep(1);
+    }
 }
 
 void *command_thread_handler(void *pdata)
@@ -122,7 +147,7 @@ void *frontend_communication_receiver_handler(void *pdata)
 
     while (app->threads.running)
     {
-        app->pipeBackend.fd = open(BACKEND_FIFO_NAME, O_RDONLY | O_NONBLOCK);
+        app->pipeBackend.fd = open(BACKEND_FIFO_NAME, O_RDONLY);
         app->pipeBackend.pid = getpid();
         if (app->pipeBackend.fd == -1)
         {
@@ -139,7 +164,7 @@ void *frontend_communication_receiver_handler(void *pdata)
                 // handle the commands received and sed the response
                 struct string_list *arguments = get_command_arguments(msg.request.arguments);
                 int close_app = command_try_execution(arguments->string, arguments->next, msg.pid, app);
-                assign_unknown_client(msg.pid, &app->frontendPids[0], app->config->max_users_allowed);                
+                assign_or_return_client_index(msg.pid, &app->frontendPids[0], app->config->max_users_allowed);                
 
                 if (!close_app)
                 {
@@ -261,14 +286,15 @@ void read_promoter_message(Promotor promoter, fd_set read_fds)
     }
 }
 
-int assign_unknown_client(pid_t pid, int *arr, int length){
+
+int assign_or_return_client_index(pid_t pid, int *arr, int length){
 
     int arrLen = length;
     int isElementPresent = 0;
      
     for (int i = 0; i < arrLen; i++) {
         if (arr[i] == pid) {
-            isElementPresent = 1;
+            isElementPresent = i;
             break;
         }
     }
@@ -283,4 +309,18 @@ int assign_unknown_client(pid_t pid, int *arr, int length){
     }
 
     return isElementPresent;
+}
+
+
+int reset_heartbit_counter(Backend* app, pid_t pid)
+{
+    for (int i = 0; i < app->config->max_users_allowed; i++)
+    {
+        if(app->users[i].pid != -1 && app->users[i].pid == pid){
+            app->users[i].heartbit = 20;
+            return 1;
+        }
+    }
+
+    return 0;
 }

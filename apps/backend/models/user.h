@@ -7,4 +7,5 @@ typedef struct User {
 	Item items_for_sale[10];
 	Item items_bought[10];
     int pid;
+	int heartbit;
 } User;

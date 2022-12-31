@@ -2,9 +2,9 @@
 
 - [ ] sell
 - [x] licat
-- [ ] lisel
-- [ ] lival
-- [ ] litime
+- [x] lisel
+- [x] lival
+- [x] litime
 - [x] time
 - [ ] buy
 - [x] cash
@@ -25,9 +25,9 @@
 
 - [ ] sell
 - [x] licat
-- [ ] lisel
-- [ ] lival
-- [ ] litime
+- [x] lisel
+- [x] lival
+- [x] litime
 - [x] time
 - [ ] buy
 - [x] cash

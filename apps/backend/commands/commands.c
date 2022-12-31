@@ -258,9 +258,48 @@ void exec_command_lival(struct Backend* app, int pid_response, struct string_lis
             }
 
         }else{
-            printf("     > Error: The time must be a number \n");
-            send_message_frontend("  > the time input must be a number", pid_response);
+            printf("     > Error: The value must be a number \n");
+            send_message_frontend("  > the value input must be a number", pid_response);
         }
+    }
+}
+
+void exec_command_lisel(struct Backend* app, int pid_response, struct string_list* arguments){
+    if( pid_response != -1 && arguments != NULL && arguments->string != NULL){
+
+            int file_item_size = get_file_size(app->config->f_items);
+            int current = 0;
+
+            char* sellerName = arguments->string;
+
+            while( current < file_item_size){
+                struct Item* currentItem = &app->items[current];
+
+                if(strcmp(sellerName,currentItem->seller_name) == 0){ //verify if the item is from the seller
+                    //generate message and send to the frontend application
+                    char message_to_send[255] = "";
+
+                    char currentValueString[20];
+                    sprintf(currentValueString, "%d", currentItem->current_value);
+
+                    char buyNowString[20];
+                    sprintf(currentValueString, "%d", currentItem->buy_now_value);
+
+                    strcat(message_to_send,currentItem->identifier);
+                    strcat(message_to_send," ");
+                    strcat(message_to_send,currentItem->name);
+                    strcat(message_to_send," ");
+                    strcat(message_to_send,currentItem->category);
+                    strcat(message_to_send," CBID: ");
+                    strcat(message_to_send,currentValueString);
+                    strcat(message_to_send," BNV: ");
+                    strcat(message_to_send,buyNowString);
+
+                    send_message_frontend(message_to_send, pid_response);
+                }
+                current++;
+            }
+
     }
 }
 

@@ -21,10 +21,13 @@ void exec_command_licat(struct string_list *arguments) {
     }
 }
 
-//TODO: implement this command
 void exec_command_lisel(struct string_list *arguments) {
     if (arguments != NULL) {
         printf("     > Executing the lisel command, with the seller name: %s\n", arguments->string);
+
+        char message[256] = "lisel ";
+        strcat(message, arguments->string);
+        send_message_backend(message);
     } else {
         printf("     > Failed to execute the lisel command, please provide the category name, example: lisel seller-name\n");
     }

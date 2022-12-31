@@ -27,7 +27,6 @@ void exec_command_cash(struct Backend *app, int pid_response)
                     foundUser = true;
                     target_username = current_user->username;
                 }
-                reset_heartbit_counter(app, pid_response);
                 current_user++;
                 total_users++;
             }
@@ -41,6 +40,8 @@ void exec_command_cash(struct Backend *app, int pid_response)
                 send_message_frontend(message_to_send, pid_response);
             }
         }
+
+        reset_heartbit_counter(app, pid_response);
     }
 }
 
@@ -75,7 +76,6 @@ void exec_command_verify_login(struct string_list *arguments, struct Backend *ap
                     current_user++;
                     total_users++;
                 }
-                reset_heartbit_counter(app, pid_response);
             }
 
             if (login == -1)
@@ -92,6 +92,7 @@ void exec_command_verify_login(struct string_list *arguments, struct Backend *ap
                 send_message_frontend("LOGIN_SUCCESS", pid_response);
             }
         }
+        reset_heartbit_counter(app, pid_response);
     }
 }
 
@@ -217,6 +218,7 @@ void exec_command_litime(struct Backend* app, int pid_response, struct string_li
             printf("     > Error: The time must be a number \n");
             send_message_frontend("  > the time input must be a number", pid_response);
         }
+        reset_heartbit_counter(app, pid_response);
     }
 }
 
@@ -261,18 +263,18 @@ void exec_command_lival(struct Backend* app, int pid_response, struct string_lis
             printf("     > Error: The value must be a number \n");
             send_message_frontend("  > the value input must be a number", pid_response);
         }
+        reset_heartbit_counter(app, pid_response);
     }
 }
 
 void exec_command_lisel(struct Backend* app, int pid_response, struct string_list* arguments){
     if( pid_response != -1 && arguments != NULL && arguments->string != NULL){
+        int file_item_size = get_file_size(app->config->f_items);
+        int current = 0;
 
-            int file_item_size = get_file_size(app->config->f_items);
-            int current = 0;
+        char* sellerName = arguments->string;
 
-            char* sellerName = arguments->string;
-
-            while( current < file_item_size){
+        while( current < file_item_size){
                 struct Item* currentItem = &app->items[current];
 
                 if(strcmp(sellerName,currentItem->seller_name) == 0){ //verify if the item is from the seller
@@ -299,68 +301,66 @@ void exec_command_lisel(struct Backend* app, int pid_response, struct string_lis
                 }
                 current++;
             }
-
+        reset_heartbit_counter(app, pid_response);
     }
 }
 
-// ======== ONLY BACKEND COMMANDS =========
 void exec_add_money_to_user(struct Backend *app, int pid_response, struct string_list *arguments)
 {
-    if (arguments != NULL)
+    if (arguments != NULL && pid_response != -1 && arguments->string != NULL)
     {
+        printf("     > Executing the add money command \n");
 
-        if (arguments->string != NULL)
+        // find username based on the pid
+        char *target_username;
+        bool foundUser = false;
+
+        User *current_user = app->users;
+        int total_users = 0;
+        while (total_users < app->config->max_users_allowed)
         {
-
-            printf("     > Executing the add money command \n");
-
-            // find username based on the pid
-            char *target_username;
-            bool foundUser = false;
-
-            User *current_user = app->users;
-            int total_users = 0;
-            while (total_users < app->config->max_users_allowed)
+            if (current_user->pid == pid_response)
             {
-                if (current_user->pid == pid_response)
-                {
-                    foundUser = true;
-                    target_username = current_user->username;
-                    break;
-                }
-                current_user++;
-                total_users++;
+                foundUser = true;
+                target_username = current_user->username;
+                break;
             }
-
-            char *amount = arguments->string;
-
-            if (verify_is_number(amount) && foundUser)
-            {
-                // get the cash of the user
-                int userBalance = getUserBalance(target_username);
-                int amountToAdd = atoi(amount);
-                int newBalance = userBalance + amountToAdd;
-
-                printf("      > Adding %d to the user: %s \n", amountToAdd, target_username);
-                printf("        > current balance will be: %d + %d = %d \n", userBalance, amountToAdd, newBalance);
-
-                char message_to_send[255] = "";
-
-                if (updateUserBalance(target_username, getUserBalance(target_username) + amountToAdd) == -1)
-                {
-                    sprintf(message_to_send, "error updating the balance");
-                }
-                else
-                {
-                    sprintf(message_to_send, "balance updated to %d", newBalance);
-                }
-
-                // notify the frontend
-                send_message_frontend(message_to_send, pid_response);
-            }
+            current_user++;
+            total_users++;
         }
+
+        char *amount = arguments->string;
+
+        if (verify_is_number(amount) && foundUser)
+        {
+            // get the cash of the user
+            int userBalance = getUserBalance(target_username);
+            int amountToAdd = atoi(amount);
+            int newBalance = userBalance + amountToAdd;
+
+            printf("      > Adding %d to the user: %s \n", amountToAdd, target_username);
+            printf("        > current balance will be: %d + %d = %d \n", userBalance, amountToAdd, newBalance);
+
+            char message_to_send[255] = "";
+
+            if (updateUserBalance(target_username, getUserBalance(target_username) + amountToAdd) == -1)
+            {
+                sprintf(message_to_send, "error updating the balance");
+            }
+            else
+            {
+                sprintf(message_to_send, "balance updated to %d", newBalance);
+            }
+
+            // notify the frontend
+            send_message_frontend(message_to_send, pid_response);
+        }
+        reset_heartbit_counter(app, pid_response);
     }
 }
+
+
+// ======== ONLY BACKEND COMMANDS =========
 
 // list promoters
 void exec_command_prom()

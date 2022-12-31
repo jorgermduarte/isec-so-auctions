@@ -125,22 +125,22 @@ void initialize_frontend(char* username, char* password){
 
 
     // verify user authentication
-    // int timeout = 5;
-    // while(auth.is_logged_in == 0){
-    //     sleep(1);
-    //     if(auth.is_logged_in == 0){
-    //         printf(" > Verifying user authentication...\n");
-    //     }
-    //     timeout--;
-    //     if(timeout <= 0){
-    //         printf(" > Failed to authenticate the user, closing the application ...\n");
-    //         exit(1);
-    //     }
-    // }
+    int timeout = 5;
+    while(auth.is_logged_in == 0){
+        sleep(1);
+        if(auth.is_logged_in == 0){
+            printf(" > Verifying user authentication...\n");
+        }
+        timeout--;
+        if(timeout <= 0){
+            printf(" > Failed to authenticate the user, closing the application ...\n");
+            exit(1);
+        }
+    }
 
-    // if(auth.is_logged_in == 1){
+    if(auth.is_logged_in == 1){
         command_handler_start();
-    // }
+    }
 }
 
 int fifo_exists(char* filename){

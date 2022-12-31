@@ -23,6 +23,16 @@ void send_message_backend(char *message) {
 
     // Now open in write mode and write
     fd = open(BACKEND_FIFO_NAME,O_WRONLY);
-    write(fd, &msg, sizeof(msg));
-    close(fd);
+
+    if(fd == -1){
+        printf(" > Error opening backend fifo to send the message \n");
+    }else{
+        if (write(fd, &msg, sizeof(msg)) != sizeof(msg)) {
+            printf(" > Error writing to backend fifo \n");
+        }
+    }
+
+    if (close(fd) == -1) {
+        printf(" > Error closing backend fifo  \n");
+    }
 }

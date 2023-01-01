@@ -2,6 +2,7 @@ typedef struct Config {
     int max_users_allowed;
     int max_promotors_allowed;
     int max_auctions_active;
+    int frontend_keep_alive_seconds;
     char *f_promotors;
     char *f_users;
     char *f_items;

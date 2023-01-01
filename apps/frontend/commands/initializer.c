@@ -22,6 +22,8 @@ int command_try_execution(char *command, struct string_list *arguments) {
         exec_command_cash();
     } else if (command_validate_name(command, "add")) {
         exec_command_add(arguments);
+    } else if (command_validate_name(command, "sell")) {
+        exec_command_sell(arguments);
     } else if (command_validate_name(command, "exit")) {
         exec_command_exit();
     } else {

@@ -2,5 +2,6 @@
 
 
 typedef struct Auction {
-	Item* item_for_sale;
+	Item item_for_sale;
+	int active;
 } Auction;

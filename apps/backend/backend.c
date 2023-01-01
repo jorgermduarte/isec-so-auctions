@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "notifier.h"
 #include "./commands/initializer.h"
 #include "../../shared/helpers/helpers.h"
 #include "../../shared/helpers/constants.h"
@@ -30,7 +31,7 @@ Backend *bootstrap()
     load_promoters_from_file(app->config->f_promotors, &promoters[0]);
     app->promotors = promoters;
 
-    memset(app->frontendPids, 0, sizeof(int));    
+    memset(app->frontendPids, 0, sizeof(int));
 
     // initialize the commands receiver fifo from the frontend applications
     frontend_communication_fifo_initializer();
@@ -40,24 +41,64 @@ Backend *bootstrap()
     pthread_create(&app->threads.pthread_backend_commands, NULL, command_thread_handler, app);
     pthread_create(&app->threads.pthread_frontend_requests, NULL, frontend_communication_receiver_handler, app);
     pthread_create(&app->threads.pthread_frontend_heartbit, NULL, frontend_heartbit_handler, app);
+    pthread_create(&app->threads.pthread_auctions_duration, NULL, auctions_duration_handler, app);
 
     return app;
+}
+
+void *auctions_duration_handler(void *pdata)
+{
+    Backend *app = (Backend *)pdata;
+
+    User logged_in_user;
+
+    char message_to_send[256] = "";
+    while (app->threads.running)
+    {
+        for (int i = 0; i < app->config->max_auctions_active; i++)
+        {
+            if (app->items[i].active == 1)
+            {
+                if (app->items[i].duration == 0)
+                {
+                    sprintf(message_to_send, "Auction for item %s has ended.", app->items[i].name);
+                    logged_in_user = get_logged_in_user(app, -1, app->items[i].seller_name);
+                    if (logged_in_user.pid != 0)
+                    {                        
+                        send_message_frontend(message_to_send, logged_in_user.pid);
+                        strcpy(message_to_send, "\0");
+                    }
+
+                    printf(" > %s\n", message_to_send);
+
+                    app->items[i].active = 0;
+                    break;
+                }
+
+                app->items[i].duration--;
+            }
+        }
+        sleep(1);
+    }
 }
 
 void *frontend_heartbit_handler(void *pdata)
 {
     Backend *app = (Backend *)pdata;
-    
+
     while (app->threads.running)
     {
-        for(int i = 0; i < app->config->max_users_allowed; i++){
-            if(app->users[i].pid != -1){
+        for (int i = 0; i < app->config->max_users_allowed; i++)
+        {
+            if (app->users[i].pid != -1)
+            {
                 app->users[i].heartbit--;
 
-                if(app->users[i].heartbit == 0){
+                if (app->users[i].heartbit == 0)
+                {
                     printf(" > Frontend %d is afk. Order its closure. \n", app->users[i].pid);
                     kill(app->users[i].pid, SIGINT);
-                    int pos = assign_or_return_client_index(app->users[i].pid, app->frontendPids, app->config->max_users_allowed);   
+                    int pos = assign_or_return_client_index(app->users[i].pid, app->frontendPids, app->config->max_users_allowed);
                     app->users[i].pid = -1;
                     app->frontendPids[pos] = 0;
                 }
@@ -94,14 +135,16 @@ void frontend_communication_fifo_initializer()
     }
 }
 
-void load_users_from_file(char* filename, Backend* app) {
+void load_users_from_file(char *filename, Backend *app)
+{
     // Open the file for reading
-    FILE* file = fopen(filename, "r");
+    FILE *file = fopen(filename, "r");
 
     User users[app->config->max_users_allowed];
 
     // Check if the file was successfully opened
-    if (file == NULL) {
+    if (file == NULL)
+    {
         fprintf(stderr, "Error: failed to open file '%s'\n", filename);
         return;
     }
@@ -113,17 +156,20 @@ void load_users_from_file(char* filename, Backend* app) {
     // Read the file line by line
     char line[256];
     int num_users = 0;
-    while (fgets(line, sizeof(line), file) != NULL) {
+    while (fgets(line, sizeof(line), file) != NULL)
+    {
         // Parse the line to get the username, password, and budget
-        char username[50];
-        char password[50];
+        char username[50] = "\0";
+        char password[50] = "\0";
         int budget;
         int num_scanned = sscanf(line, "%s %s %d", username, password, &budget);
 
-
         // Check if the line was successfully parsed
-        if (num_scanned == 3) {
+        if (num_scanned == 3)
+        {
             User newUser;
+            memset(&newUser, 0, sizeof(User));
+
             strcpy(newUser.username, username);
             strcpy(newUser.password, password);
             newUser.budget = budget;
@@ -164,7 +210,7 @@ void *frontend_communication_receiver_handler(void *pdata)
                 // handle the commands received and sed the response
                 struct string_list *arguments = get_command_arguments(msg.request.arguments);
                 int close_app = command_try_execution(arguments->string, arguments->next, msg.pid, app);
-                assign_or_return_client_index(msg.pid, &app->frontendPids[0], app->config->max_users_allowed);                
+                assign_or_return_client_index(msg.pid, &app->frontendPids[0], app->config->max_users_allowed);
 
                 if (!close_app)
                 {
@@ -191,7 +237,7 @@ void check_backend_duplicate_execution()
     }
 }
 
-void load_items_from_file(char *filename,Backend* app)
+void load_items_from_file(char *filename, Backend *app)
 {
     FILE *fp;
     char *line = NULL;
@@ -201,21 +247,23 @@ void load_items_from_file(char *filename,Backend* app)
     if (fp == NULL)
         exit(EXIT_FAILURE);
 
-    Item* itemsDefine;
+    Item *itemsDefine;
     int i = 0;
 
     while ((read = getline(&line, &len, fp)) != -1)
     {
-        if(i == 0){
-            itemsDefine = (Item*) malloc(sizeof(Item));
+        if (i == 0)
+        {
+            itemsDefine = (Item *)malloc(sizeof(Item));
         }
 
         Item it;
         // the %20s is to avoid buffer overflows
         sscanf(line, "%20s %20s %20s %d %d %d %20s %20s", it.identifier, it.name, it.category, &it.duration, &it.current_value, &it.buy_now_value, it.seller_name, it.bidder_name);
+        it.active = 1;
         itemsDefine[i] = it;
-        itemsDefine = (Item*) realloc(itemsDefine, sizeof(Item) * (i + 2));
-        printf("    >  Loading item: %s\n",it.name);
+        itemsDefine = (Item *)realloc(itemsDefine, sizeof(Item) * (i + 2));
+        printf("    >  Loading item: %s\n", it.name);
         i++;
     }
     fclose(fp);
@@ -260,11 +308,11 @@ int get_max_promoter_fd(Promotor *promoters, int size)
 {
     for (size_t i = 0; i < size; i++)
     {
-        if(promoters[i].valid != 1){
+        if (promoters[i].valid != 1)
+        {
             return promoters[--i].fd[0] + 1;
         }
     }
-    
 }
 
 void read_promoter_message(Promotor promoter, fd_set read_fds)
@@ -273,7 +321,7 @@ void read_promoter_message(Promotor promoter, fd_set read_fds)
     if (promoter.valid == 1)
     {
         if (FD_ISSET(promoter.fd[0], &read_fds))
-        {   
+        {
             int size = read(promoter.fd[0], buffer, sizeof(buffer));
             if (size != 0)
             {
@@ -286,22 +334,27 @@ void read_promoter_message(Promotor promoter, fd_set read_fds)
     }
 }
 
-
-int assign_or_return_client_index(pid_t pid, int *arr, int length){
+int assign_or_return_client_index(pid_t pid, int *arr, int length)
+{
 
     int arrLen = length;
     int isElementPresent = 0;
-     
-    for (int i = 0; i < arrLen; i++) {
-        if (arr[i] == pid) {
+
+    for (int i = 0; i < arrLen; i++)
+    {
+        if (arr[i] == pid)
+        {
             isElementPresent = i;
             break;
         }
     }
 
-    if(isElementPresent == 0){
-        for (int i = 0; i < arrLen; i++) {
-            if (arr[i] == 0){
+    if (isElementPresent == 0)
+    {
+        for (int i = 0; i < arrLen; i++)
+        {
+            if (arr[i] == 0)
+            {
                 arr[i] = pid;
                 break;
             }
@@ -311,16 +364,32 @@ int assign_or_return_client_index(pid_t pid, int *arr, int length){
     return isElementPresent;
 }
 
-
-int reset_heartbit_counter(Backend* app, pid_t pid)
+int reset_heartbit_counter(Backend *app, pid_t pid)
 {
     for (int i = 0; i < app->config->max_users_allowed; i++)
     {
-        if(app->users[i].pid != -1 && app->users[i].pid == pid){
-            app->users[i].heartbit = 20;
+        if (app->users[i].pid != -1 && app->users[i].pid == pid)
+        {
+            app->users[i].heartbit = app->config->frontend_keep_alive_seconds;
             return 1;
         }
     }
 
     return 0;
+}
+
+User get_logged_in_user(Backend *app, pid_t pid, char *seller)
+{
+    for (int i = 0; i < app->config->max_users_allowed; i++)
+    {
+        if (pid != -1 && app->users[i].pid == pid)
+        {
+            return app->users[i];
+        }
+
+        if (seller != "" && strcmp(app->users[i].username, seller) == 0)
+        {
+            return app->users[i];
+        }
+    }
 }

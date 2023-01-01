@@ -130,24 +130,28 @@ void exec_command_exit_frontend(struct Backend *app, int pid_response)
     }
 }
 
-void exec_command_licat(struct Backend* app, int pid_response, struct string_list* arguments){
-    if(pid_response != -1 && arguments != NULL && arguments->string != NULL){
-        char* category = arguments->string;
+void exec_command_licat(struct Backend *app, int pid_response, struct string_list *arguments)
+{
+    if (pid_response != -1 && arguments != NULL && arguments->string != NULL)
+    {
+        char *category = arguments->string;
         printf("     > Executing the licat command with category: %s \n", category);
 
-        struct Item* currentItem = app->items;
+        struct Item *currentItem = app->items;
         int total_items = 0;
 
         int file_item_size = get_file_size(app->config->f_items);
 
-        while( total_items < file_item_size){
+        while (total_items < file_item_size)
+        {
 
-            //verify item category
-            if(strcmp(currentItem[total_items].category,category) == 0){
+            // verify item category
+            if (strcmp(currentItem[total_items].category, category) == 0)
+            {
 
                 printf("    > Found item with category: %s \n", currentItem[total_items].category);
 
-                //generate message and send to the frontend application
+                // generate message and send to the frontend application
                 struct Item item = currentItem[total_items];
                 char message_to_send[255] = "";
 
@@ -157,15 +161,15 @@ void exec_command_licat(struct Backend* app, int pid_response, struct string_lis
                 char buyNowString[20];
                 sprintf(currentValueString, "%d", item.buy_now_value);
 
-                strcat(message_to_send,item.identifier);
-                strcat(message_to_send," ");
-                strcat(message_to_send,item.name);
-                strcat(message_to_send," ");
-                strcat(message_to_send,item.category);
-                strcat(message_to_send," CBID: ");
-                strcat(message_to_send,currentValueString);
-                strcat(message_to_send," BNV: ");
-                strcat(message_to_send,buyNowString);
+                strcat(message_to_send, item.identifier);
+                strcat(message_to_send, " ");
+                strcat(message_to_send, item.name);
+                strcat(message_to_send, " ");
+                strcat(message_to_send, item.category);
+                strcat(message_to_send, " CBID: ");
+                strcat(message_to_send, currentValueString);
+                strcat(message_to_send, " BNV: ");
+                strcat(message_to_send, buyNowString);
 
                 send_message_frontend(message_to_send, pid_response);
             }
@@ -176,21 +180,26 @@ void exec_command_licat(struct Backend* app, int pid_response, struct string_lis
     }
 }
 
-void exec_command_litime(struct Backend* app, int pid_response, struct string_list* arguments){
-    if( pid_response != -1 && arguments != NULL && arguments->string != NULL){
-        if(verify_is_number(arguments->string)){
+void exec_command_litime(struct Backend *app, int pid_response, struct string_list *arguments)
+{
+    if (pid_response != -1 && arguments != NULL && arguments->string != NULL)
+    {
+        if (verify_is_number(arguments->string))
+        {
 
             int file_item_size = get_file_size(app->config->f_items);
             int current = 0;
 
             int time = atoi(arguments->string);
 
-            while( current < file_item_size){
+            while (current < file_item_size)
+            {
 
-                struct Item* currentItem = &app->items[current];
+                struct Item *currentItem = &app->items[current];
 
-                if(currentItem->duration <= time){ //verify if the item is still active
-                    //generate message and send to the frontend application
+                if (currentItem->duration <= time)
+                { // verify if the item is still active
+                    // generate message and send to the frontend application
                     char message_to_send[255] = "";
 
                     char currentValueString[20];
@@ -199,22 +208,23 @@ void exec_command_litime(struct Backend* app, int pid_response, struct string_li
                     char buyNowString[20];
                     sprintf(currentValueString, "%d", currentItem->buy_now_value);
 
-                    strcat(message_to_send,currentItem->identifier);
-                    strcat(message_to_send," ");
-                    strcat(message_to_send,currentItem->name);
-                    strcat(message_to_send," ");
-                    strcat(message_to_send,currentItem->category);
-                    strcat(message_to_send," CBID: ");
-                    strcat(message_to_send,currentValueString);
-                    strcat(message_to_send," BNV: ");
-                    strcat(message_to_send,buyNowString);
+                    strcat(message_to_send, currentItem->identifier);
+                    strcat(message_to_send, " ");
+                    strcat(message_to_send, currentItem->name);
+                    strcat(message_to_send, " ");
+                    strcat(message_to_send, currentItem->category);
+                    strcat(message_to_send, " CBID: ");
+                    strcat(message_to_send, currentValueString);
+                    strcat(message_to_send, " BNV: ");
+                    strcat(message_to_send, buyNowString);
 
                     send_message_frontend(message_to_send, pid_response);
                 }
                 current++;
             }
-
-        }else{
+        }
+        else
+        {
             printf("     > Error: The time must be a number \n");
             send_message_frontend("  > the time input must be a number", pid_response);
         }
@@ -222,20 +232,25 @@ void exec_command_litime(struct Backend* app, int pid_response, struct string_li
     }
 }
 
-void exec_command_lival(struct Backend* app, int pid_response, struct string_list* arguments){
-    if( pid_response != -1 && arguments != NULL && arguments->string != NULL){
-        if(verify_is_number(arguments->string)){
+void exec_command_lival(struct Backend *app, int pid_response, struct string_list *arguments)
+{
+    if (pid_response != -1 && arguments != NULL && arguments->string != NULL)
+    {
+        if (verify_is_number(arguments->string))
+        {
 
             int file_item_size = get_file_size(app->config->f_items);
             int current = 0;
 
             int price = atoi(arguments->string);
 
-            while( current < file_item_size){
-                struct Item* currentItem = &app->items[current];
+            while (current < file_item_size)
+            {
+                struct Item *currentItem = &app->items[current];
 
-                if(currentItem->current_value <= price || currentItem->buy_now_value <= price){ //verify if the item price is lower than the input
-                    //generate message and send to the frontend application
+                if (currentItem->current_value <= price || currentItem->buy_now_value <= price)
+                { // verify if the item price is lower than the input
+                    // generate message and send to the frontend application
                     char message_to_send[255] = "";
 
                     char currentValueString[20];
@@ -244,22 +259,23 @@ void exec_command_lival(struct Backend* app, int pid_response, struct string_lis
                     char buyNowString[20];
                     sprintf(currentValueString, "%d", currentItem->buy_now_value);
 
-                    strcat(message_to_send,currentItem->identifier);
-                    strcat(message_to_send," ");
-                    strcat(message_to_send,currentItem->name);
-                    strcat(message_to_send," ");
-                    strcat(message_to_send,currentItem->category);
-                    strcat(message_to_send," CBID: ");
-                    strcat(message_to_send,currentValueString);
-                    strcat(message_to_send," BNV: ");
-                    strcat(message_to_send,buyNowString);
+                    strcat(message_to_send, currentItem->identifier);
+                    strcat(message_to_send, " ");
+                    strcat(message_to_send, currentItem->name);
+                    strcat(message_to_send, " ");
+                    strcat(message_to_send, currentItem->category);
+                    strcat(message_to_send, " CBID: ");
+                    strcat(message_to_send, currentValueString);
+                    strcat(message_to_send, " BNV: ");
+                    strcat(message_to_send, buyNowString);
 
                     send_message_frontend(message_to_send, pid_response);
                 }
                 current++;
             }
-
-        }else{
+        }
+        else
+        {
             printf("     > Error: The value must be a number \n");
             send_message_frontend("  > the value input must be a number", pid_response);
         }
@@ -267,40 +283,44 @@ void exec_command_lival(struct Backend* app, int pid_response, struct string_lis
     }
 }
 
-void exec_command_lisel(struct Backend* app, int pid_response, struct string_list* arguments){
-    if( pid_response != -1 && arguments != NULL && arguments->string != NULL){
+void exec_command_lisel(struct Backend *app, int pid_response, struct string_list *arguments)
+{
+    if (pid_response != -1 && arguments != NULL && arguments->string != NULL)
+    {
         int file_item_size = get_file_size(app->config->f_items);
         int current = 0;
 
-        char* sellerName = arguments->string;
+        char *sellerName = arguments->string;
 
-        while( current < file_item_size){
-                struct Item* currentItem = &app->items[current];
+        while (current < file_item_size)
+        {
+            struct Item *currentItem = &app->items[current];
 
-                if(strcmp(sellerName,currentItem->seller_name) == 0){ //verify if the item is from the seller
-                    //generate message and send to the frontend application
-                    char message_to_send[255] = "";
+            if (strcmp(sellerName, currentItem->seller_name) == 0)
+            { // verify if the item is from the seller
+                // generate message and send to the frontend application
+                char message_to_send[255] = "";
 
-                    char currentValueString[20];
-                    sprintf(currentValueString, "%d", currentItem->current_value);
+                char currentValueString[20];
+                sprintf(currentValueString, "%d", currentItem->current_value);
 
-                    char buyNowString[20];
-                    sprintf(currentValueString, "%d", currentItem->buy_now_value);
+                char buyNowString[20];
+                sprintf(currentValueString, "%d", currentItem->buy_now_value);
 
-                    strcat(message_to_send,currentItem->identifier);
-                    strcat(message_to_send," ");
-                    strcat(message_to_send,currentItem->name);
-                    strcat(message_to_send," ");
-                    strcat(message_to_send,currentItem->category);
-                    strcat(message_to_send," CBID: ");
-                    strcat(message_to_send,currentValueString);
-                    strcat(message_to_send," BNV: ");
-                    strcat(message_to_send,buyNowString);
+                strcat(message_to_send, currentItem->identifier);
+                strcat(message_to_send, " ");
+                strcat(message_to_send, currentItem->name);
+                strcat(message_to_send, " ");
+                strcat(message_to_send, currentItem->category);
+                strcat(message_to_send, " CBID: ");
+                strcat(message_to_send, currentValueString);
+                strcat(message_to_send, " BNV: ");
+                strcat(message_to_send, buyNowString);
 
-                    send_message_frontend(message_to_send, pid_response);
-                }
-                current++;
+                send_message_frontend(message_to_send, pid_response);
             }
+            current++;
+        }
         reset_heartbit_counter(app, pid_response);
     }
 }
@@ -359,6 +379,51 @@ void exec_add_money_to_user(struct Backend *app, int pid_response, struct string
     }
 }
 
+void exec_command_sell(struct Backend *app, int pid_response, struct string_list *arguments)
+{
+    if (arguments != NULL && pid_response != -1 && arguments->string != NULL)
+    {
+        printf("     > Starting new auction for the item %s during %d \n", arguments->string, atoi(arguments->next->next->next->next->string));
+
+        User logged_in_user = get_logged_in_user(app, pid_response, "");
+
+        Item item_for_sale = {
+            .bidder_name = "",
+            .seller_name = "",
+            .buy_now_value = atoi(arguments->next->next->next->string),
+            .category = "",
+            .name = "",
+            .current_value = atoi(arguments->next->next->string),
+            .duration = atoi(arguments->next->next->next->next->string),
+            .identifier = "",
+            .active = 1
+        };
+
+        strcpy(item_for_sale.category, arguments->next->string);
+        strcpy(item_for_sale.name, arguments->string);
+        strcpy(item_for_sale.seller_name, logged_in_user.username);
+        
+        char message_to_send[255] = "";
+        int added = 0;
+        for(int i = 0; i < app->config->max_auctions_active; i++){
+            if(app->items[i].active != 1){
+                app->items[i] = item_for_sale;
+                added = 1;
+                sprintf(message_to_send, "Auction for %s is ongoing\n", item_for_sale.name);
+                break;
+            }
+        }
+
+        if(added == 0)
+            sprintf(message_to_send, "Auction for %s did not start because of the maximum of auctions reached.\n", item_for_sale.name);
+
+
+        // notify the frontend  
+        send_message_frontend(message_to_send, pid_response);
+
+        reset_heartbit_counter(app, pid_response);
+    }
+}
 
 // ======== ONLY BACKEND COMMANDS =========
 

@@ -49,7 +49,7 @@ void* backend_communication_receiver_handler(void* data)
     printf(" > [INFO] FRONTEND COMMUNICATION RECEIVER HANDLER STARTED FOR PIPE: %s\n",client->fifo_name);
 
     while(client->frontend_responses.lock){
-        client->fifo_fd = open(client->fifo_name,  O_RDWR);
+        client->fifo_fd = open(client->fifo_name,  O_RDONLY);
         if(client->fifo_fd == -1){
             //printf(" > [WRN] Something went wrong receiving the message from a backend application \n");
         }else{

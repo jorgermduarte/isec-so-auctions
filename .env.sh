@@ -1,4 +1,4 @@
-  #!/bin/sh
+#!/bin/sh
 
 export MAX_PROMOTOR=10
 export MAX_USERS=20
@@ -6,6 +6,7 @@ export MAX_ACTIVE_AUCTIONS=30
 export FPROMOTERS="file_promoters.txt"
 export FUSERS="file_users.txt"
 export FITEMS="file_items.txt"
+export KEEPALIVE_FRONTEND=60
 
 echo "############################################"
 echo "###     SETTING ENVIRONMENT VARIABLES    ###"
@@ -17,4 +18,6 @@ echo "############################################"
 echo "###  FUSERS      ==> $FUSERS      ###"
 echo "###  FPROMOTERS  ==> $FPROMOTERS  ###"
 echo "###  FITEMS      ==> $FITEMS      ###"
+echo "############################################"
+echo "###  KEEPALIVE_FRONTEND ==> $KEEPALIVE_FRONTEND           ###"
 echo "############################################"

@@ -7,7 +7,7 @@ Config *get_env_variables() {
     Config *config = malloc(sizeof(Config));
     bool file_environment_variables = false;
 
-    int aux_numeric_env[3];
+    int aux_numeric_env[4];
     char *aux_string_env[3];
     char err_msg[256] = "\n Environment variable missing. Assuming fallback value of 10";
 
@@ -40,15 +40,26 @@ Config *get_env_variables() {
         aux_string_env[2] = f_items;
     }
 
+    char* keep_alive_frontend = getenv("KEEPALIVE_FRONTEND");
+    if(keep_alive_frontend != NULL){
+        printf("        > keep_alive_frontend: %s\n ",keep_alive_frontend);
+        aux_numeric_env[3] = atoi(keep_alive_frontend);
+    } else {
+        perror(err_msg);
+        aux_numeric_env[3] = 0;
+    }
+
     if (file_environment_variables) {
         config->max_promotors_allowed = aux_numeric_env[0];
         config->max_users_allowed = aux_numeric_env[1];
         config->max_auctions_active = aux_numeric_env[2];
 
+        config->frontend_keep_alive_seconds = aux_numeric_env[3];
 
         config->f_promotors = aux_string_env[0];
         config->f_users = aux_string_env[1];
         config->f_items = aux_string_env[2];
+
 
         printf("    > environment variables defined properly\n");
 

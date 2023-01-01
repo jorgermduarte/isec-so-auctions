@@ -1,6 +1,6 @@
 # frontend
 
-- [ ] sell
+- [x] sell
 - [x] licat
 - [x] lisel
 - [x] lival
@@ -9,7 +9,7 @@
 - [ ] buy
 - [x] cash
 - [x] add
-- [x] exit // needs to do the clean up! //TODO
+- [x] exit
 
 # backend
 
@@ -23,7 +23,7 @@
 
 # backend handle frontend commands
 
-- [ ] sell
+- [x] sell
 - [x] licat
 - [x] lisel
 - [x] lival

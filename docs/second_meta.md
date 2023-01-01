@@ -16,7 +16,7 @@
 - [x] users
 - [x] list
 - [ ] kick
-- [ ] prom
+- [x] prom
 - [ ] reprom
 - [ ] cancel
 - [x] close

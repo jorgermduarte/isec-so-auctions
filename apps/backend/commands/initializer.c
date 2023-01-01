@@ -38,8 +38,8 @@ int command_try_execution(char* command, struct string_list* arguments, int pid_
         exec_command_list_users(app);
     }else if(command_validate_name(command,"kick")){
         exec_command_kick(arguments);
-    }else if(command_validate_name(command,"prom")){
-        exec_command_prom();
+    }else if(command_validate_name(command,"prom") && pid_response == -1){ // only available for backend applications
+        exec_command_prom(app);
     }else if(command_validate_name(command,"reprom")){
         exec_command_reprom();
     }else if(command_validate_name(command,"cancel")){

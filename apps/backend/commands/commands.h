@@ -22,11 +22,11 @@ void exec_command_sell(struct Backend* app, int pid_response, struct string_list
 void exec_command_list();
 // list all users from the file
 void exec_command_list_users(struct Backend* app);
+// list promoters
+void exec_command_prom(struct Backend* app);
 
 // TODO: commands to implement from the backend application
 void exec_command_kick(struct string_list* arguments);
-// list promoters
-void exec_command_prom();
 // update promoters
 void exec_command_reprom();
 // cancel promoter

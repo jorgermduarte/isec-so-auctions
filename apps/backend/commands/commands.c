@@ -363,9 +363,22 @@ void exec_add_money_to_user(struct Backend *app, int pid_response, struct string
 // ======== ONLY BACKEND COMMANDS =========
 
 // list promoters
-void exec_command_prom()
+void exec_command_prom(struct Backend *app)
 {
     printf("     > Executing the list promoters command\n");
+
+    Promotor* currentPromotor = app->promotors;
+    int current = 0;
+    while ( current < app->config->max_promotors_allowed)
+    {
+        if (currentPromotor->valid == 1)
+        {
+            printf("      > Promotor %d: %s \n", currentPromotor->pid, currentPromotor->name);
+        }
+        currentPromotor++;
+        current++;
+    }
+
 }
 
 // update promoters

@@ -18,7 +18,7 @@
 - [x] kick
 - [x] prom
 - [ ] reprom
-- [ ] cancel
+- [x] cancel
 - [x] close
 
 # backend handle frontend commands

@@ -259,8 +259,9 @@ void load_items_from_file(char *filename, Backend *app)
 
         Item it;
         // the %20s is to avoid buffer overflows
-        sscanf(line, "%20s %20s %20s %d %d %d %20s %20s", it.identifier, it.name, it.category, &it.duration, &it.current_value, &it.buy_now_value, it.seller_name, it.bidder_name);
+        sscanf(line, "%20s %20s %20s %d %d %d %20s %20s", it.identifier, it.name, it.category, &it.current_value,  &it.buy_now_value, &it.duration, it.seller_name, it.bidder_name);
         it.active = 1;
+        it.unique_id = i;
         itemsDefine[i] = it;
         itemsDefine = (Item *)realloc(itemsDefine, sizeof(Item) * (i + 2));
         printf("    >  Loading item: %s\n", it.name);
@@ -376,6 +377,19 @@ int reset_heartbit_counter(Backend *app, pid_t pid)
     }
 
     return 0;
+}
+
+User* find_user_by_pid(Backend *app, pid_t pid)
+{
+    for (int i = 0; i < app->config->max_users_allowed; i++)
+    {
+        if (app->users[i].pid != -1 && app->users[i].pid == pid)
+        {
+            return &app->users[i];
+        }
+    }
+
+    return NULL;
 }
 
 User get_logged_in_user(Backend *app, pid_t pid, char *seller)

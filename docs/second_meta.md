@@ -6,7 +6,7 @@
 - [x] lival
 - [x] litime
 - [x] time
-- [ ] buy
+- [x] buy
 - [x] cash
 - [x] add
 - [x] exit
@@ -15,7 +15,7 @@
 
 - [x] users
 - [x] list
-- [ ] kick
+- [x] kick
 - [x] prom
 - [ ] reprom
 - [ ] cancel
@@ -29,12 +29,8 @@
 - [x] lival
 - [x] litime
 - [x] time
-- [ ] buy
+- [x] buy
 - [x] cash
 - [x] add
 - [x] login
-
-
-
-
 

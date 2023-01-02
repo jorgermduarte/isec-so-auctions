@@ -11,15 +11,12 @@ void exec_command_licat(struct Backend* app, int pid_response, struct string_lis
 void exec_command_litime(struct Backend* app, int pid_response, struct string_list* arguments);
 void exec_command_lival(struct Backend* app, int pid_response, struct string_list* arguments);
 void exec_command_lisel(struct Backend* app, int pid_response, struct string_list* arguments);
-
-
-//TODO: commands to implement from the frontend application
-void exec_command_buy(struct Backend* app, int pid_response, struct string_list* arguments);
 void exec_command_sell(struct Backend* app, int pid_response, struct string_list* arguments);
+void exec_command_buy(struct Backend* app, int pid_response, struct string_list* arguments);
 
 // ======== ONLY BACKEND COMMANDS =========
 // list all items from the database / file
-void exec_command_list();
+void exec_command_list(struct Backend *app,int pid_response);
 // list all users from the file
 void exec_command_list_users(struct Backend* app);
 // list promoters
@@ -31,7 +28,6 @@ void exec_command_kick(struct Backend* app, struct string_list* arguments);
 void exec_command_reprom();
 // cancel promoter
 void exec_command_cancel_prom(struct string_list* arguments);
-
 
 // ======== BOTH FRONTEND AND BACKEND COMMANDS =========
 

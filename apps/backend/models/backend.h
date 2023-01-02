@@ -60,3 +60,4 @@ int assign_or_return_client_index(pid_t pid, int *arr, int length);
 int reset_heartbit_counter(Backend* app, pid_t pid);
 
 User get_logged_in_user(Backend* app, pid_t pid, char *seller);
+User* find_user_by_pid(Backend *app, pid_t pid);

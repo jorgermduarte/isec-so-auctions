@@ -8,9 +8,9 @@ int command_try_execution(char *command, struct string_list *arguments, int pid_
     printf("    > Verifying command existence\n");
     int exit = 0;
 
-    if (command_validate_name(command, "list") && pid_response == -1)
-    { // only available for backend apps
-        exec_command_list();
+    if (command_validate_name(command, "list"))
+    { // available for backend and frontend applications
+        exec_command_list(app,pid_response);
     }
     else if (command_validate_name(command, "login") && pid_response != -1 && arguments != NULL)
     { // only available for frontend apps
@@ -45,10 +45,15 @@ int command_try_execution(char *command, struct string_list *arguments, int pid_
         exec_command_lisel(app, pid_response, arguments);
     }
     else if (command_validate_name(command, "sell") && pid_response != -1)
-    {
+    { // only available for frontend applications
         exec_command_sell(app, pid_response, arguments);
     }
-    else if (command_validate_name(command, "users"))
+    else if (command_validate_name(command, "buy") && pid_response != -1)
+    {  // only available for frontend applications
+        exec_command_buy(app, pid_response, arguments);
+    }
+
+    else if (command_validate_name(command, "users") && pid_response == -1 ) //only available to the backend
     {
         exec_command_list_users(app);
     }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 typedef struct Item {
+    int unique_id;
     char identifier[20];
 	char seller_name[50];
 	char bidder_name[20];

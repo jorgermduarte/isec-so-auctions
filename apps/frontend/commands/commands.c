@@ -72,14 +72,12 @@ void exec_command_litime(struct string_list *arguments)
     }
 }
 
-// TODO: implement this command
 void exec_command_time()
 {
     printf("     > Executing the time command\n");
     send_message_backend("time");
 }
 
-// TODO: implement this command
 void exec_command_buy(struct string_list *arguments)
 {
     if (arguments != NULL && arguments->next != NULL && verify_is_number(arguments->string) &&
@@ -87,6 +85,12 @@ void exec_command_buy(struct string_list *arguments)
     {
         printf("     > Executing the buy command, with the values: id: %s , value: %s\n", arguments->string,
                arguments->next->string);
+
+        char message[256] = "buy ";
+        strcat(message, arguments->string);
+        strcat(message, " ");
+        strcat(message, arguments->next->string);
+        send_message_backend(message);
     }
     else
     {

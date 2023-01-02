@@ -425,6 +425,110 @@ void exec_command_sell(struct Backend *app, int pid_response, struct string_list
     }
 }
 
+void exec_command_buy(struct Backend* app, int pid_response, struct string_list *arguments){
+    if(pid_response != -1 && arguments != NULL && arguments->string != NULL && arguments->next != NULL && arguments->next->string != NULL){
+        // a frontend application is trying to buy an item
+        char* amount = arguments->next->string;
+        if(verify_is_number(amount) && verify_is_number(arguments->string)){
+
+            int itemIdentifier = atoi(arguments->string);
+            int amountNumber = atoi(amount);
+
+            // find the item
+            int item_index = 0;
+            bool foundItem = false;
+            while( item_index < app->config->max_auctions_active){
+                if( app->items[item_index].active == 1 && app->items[item_index].unique_id == itemIdentifier){
+                    foundItem = true;
+                    // found the item
+                    User* loggedUser = find_user_by_pid(app, pid_response);
+
+                    if(loggedUser != NULL){
+
+                        // verify if the user has enough money
+                        int userBalance = getUserBalance(loggedUser->username);
+
+                        if(userBalance >= amountNumber && amountNumber >= app->items[item_index].current_value){
+
+                            // place the bid in the item
+                            app->items[item_index].current_value = amountNumber;
+                            strcpy(app->items[item_index].bidder_name, loggedUser->username);
+
+                            if(app->items[item_index].current_value >= app->items[item_index].buy_now_value){
+                                // the user bought the item
+                                app->items[item_index].active = 0;
+
+                                // update the user balance based on the buy_now_value
+                                updateUserBalance(loggedUser->username, userBalance - app->items[item_index].buy_now_value);
+
+                                // notify the frontend
+                                char message_to_send[255] = "";
+                                sprintf(message_to_send, "You bought the item %s for %d", app->items[item_index].name, amountNumber);
+                                send_message_frontend(message_to_send, pid_response);
+
+                                // notify every frontend that the item was sold expect for the user that bought the item
+                                char message_to_send2[255] = "";
+                                sprintf(message_to_send2, "The item %s was sold for %d to the user: %s", app->items[item_index].name, amountNumber, loggedUser->username);
+
+                                User* current_user = app->users;
+                                int total_users = 0;
+                                while(total_users < app->config->max_users_allowed){
+                                    if(current_user->pid != -1 && current_user->pid != pid_response){
+                                        send_message_frontend(message_to_send2, current_user->pid);
+                                    }
+                                    current_user++;
+                                    total_users++;
+                                }
+
+                            }else{
+                                // notify the frontend
+                                char message_to_send[255] = "";
+                                sprintf(message_to_send, "You have placed a bid of %d in the item %s", amountNumber, app->items[item_index].name);
+
+                                // notify every frontend that the item got a new bid
+                                char message_to_send2[255] = "";
+                                sprintf(message_to_send2, "The item %s got a new bid of %d from the user: %s", app->items[item_index].name, amountNumber, loggedUser->username);
+
+                                User* current_user = app->users;
+                                int total_users = 0;
+                                while(total_users < app->config->max_users_allowed){
+                                    if(current_user->pid != -1 && current_user->pid != pid_response){
+                                        send_message_frontend(message_to_send2, current_user->pid);
+                                    }
+                                    current_user++;
+                                    total_users++;
+                                }
+
+                            }
+                        }else{
+                            // the user does not have enough money
+                            char message_to_send[255] = "";
+                            sprintf(message_to_send, "You do not have enough money to buy this item or the bid is low");
+                            send_message_frontend(message_to_send, pid_response);
+                        }
+                    }
+                    break;
+                }
+                item_index++;
+            }
+
+            if(foundItem == false){
+                // the item was not found
+                char message_to_send[255] = "";
+                sprintf(message_to_send, "The item was not found");
+                send_message_frontend(message_to_send, pid_response);
+            }
+
+        }else{
+            // notify the frontend
+            send_message_frontend("The amount is not a number", pid_response);
+        }
+
+        reset_heartbit_counter(app, pid_response);
+
+    }
+}
+
 // ======== ONLY BACKEND COMMANDS =========
 
 // list promoters
@@ -534,29 +638,25 @@ void exec_command_list_users(struct Backend *app)
 // ======== BOTH FRONTEND AND BACKEND COMMANDS =========
 
 // list all items
-void exec_command_list()
+void exec_command_list(struct Backend *app,int pid_response)
 {
     printf("     > Executing the list all items command\n");
 
-    FILE *fp;
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-    int i = 0;
+    int item_index = 0;
 
-    fp = fopen("file_items.txt", "r");
-    if (fp == NULL)
-        exit(EXIT_FAILURE);
-
-    while ((read = getline(&line, &len, fp)) != -1)
-    {
-        Item it;
-        // the %20s is to avoid buffer overflows
-        sscanf(line, "%20s %20s %20s %d %d %d %20s %20s", it.identifier, it.name, it.category, &it.duration, &it.current_value, &it.buy_now_value, it.seller_name, it.bidder_name);
-        printf("     > %s %s %s %d %d %d %s %s\n", it.identifier, it.name, it.category, it.duration, it.current_value, it.buy_now_value, it.seller_name, it.bidder_name);
+    while(item_index < app->config->max_auctions_active){
+        if(app->items[item_index].active == 1){
+            char message_to_send[255] = "";
+            sprintf(message_to_send, "Item %d: %s, BN: %d CV: %d CT: %s", app->items[item_index].unique_id, app->items[item_index].name, app->items[item_index].buy_now_value, app->items[item_index].current_value, app->items[item_index].category);
+            if(pid_response != -1) {
+                send_message_frontend(message_to_send, pid_response);
+            }else{
+                printf("Item %d: %s, BN: %d CV: %d CT: %s\n", app->items[item_index].unique_id, app->items[item_index].name, app->items[item_index].buy_now_value, app->items[item_index].current_value, app->items[item_index].category);
+            }
+        }
+        item_index++;
     }
 
-    fclose(fp);
-    if (line)
-        free(line);
+    reset_heartbit_counter(app, pid_response);
+
 }

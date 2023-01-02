@@ -119,7 +119,6 @@ int main(int argc, char *argv[])
     }
 
     // receive messages from promoters with selects
-    // TODO: bug detected after some promoters messages we receive spam! (not sure if it is the last line)
     do
     {
         tv.tv_sec = 5;
@@ -146,10 +145,17 @@ int main(int argc, char *argv[])
                 if (FD_ISSET(app->promotors[i].fd[0], &read_fds))
                 {
                     char buffer[1024];
-                    read(app->promotors[i].fd[0], buffer, 1024);
-                    rbash();
-                    printf("\n[Promoter %s - p%d] sent the following message : %s\033[0m", app->promotors[i].name, app->promotors[i].pid, buffer);
-                    creset();
+                    int size = read(app->promotors[i].fd[0], buffer, 1024);
+                    if(size > 0){
+                        rbash();
+                        printf("\n[Promoter %s - p%d] sent the following message : %s\033[0m", app->promotors[i].name, app->promotors[i].pid, buffer);
+                        creset();
+                    }else{
+                        //printf(" > Reached the end of the pipe for promoter %s - p%d \n", app->promotors[i].name, app->promotors[i].pid);
+                        app->promotors[i].valid = 0;
+                        kill(app->promotors[i].pid, SIGINT);
+                    }
+
                 }
             }
         }

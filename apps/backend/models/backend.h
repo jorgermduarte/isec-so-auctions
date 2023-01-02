@@ -54,7 +54,6 @@ void frontend_communication_fifo_initializer();
 void check_backend_duplicate_execution();
 
 int get_max_promoter_fd(struct Backend *app);
-void read_promoter_message(Promotor promoter, fd_set read_fds);
 int assign_or_return_client_index(pid_t pid, int *arr, int length);
 
 int reset_heartbit_counter(Backend* app, pid_t pid);

@@ -336,26 +336,6 @@ int get_max_promoter_fd(struct Backend* app)
     return app->promotors[max].fd[0] + 1;
 }
 
-void read_promoter_message(Promotor promoter, fd_set read_fds)
-{
-    char buffer[20] = "\0";
-    if (promoter.valid == 1)
-    {
-        printf(" > reading message from promoter %s\n", promoter.name);
-        if (FD_ISSET(promoter.fd[0], &read_fds))
-        {
-            int size = read(promoter.fd[0], buffer, sizeof(buffer));
-            if (size != 0)
-            {
-                rbash();
-                printf("\n[Promoter %s - p%d] sent the following message : %s\033[0m", promoter.name, promoter.pid, buffer);
-                creset();
-            }
-            memset(buffer, 0, sizeof(buffer));
-        }
-    }
-}
-
 int assign_or_return_client_index(pid_t pid, int *arr, int length)
 {
 

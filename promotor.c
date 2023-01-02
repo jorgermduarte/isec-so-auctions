@@ -23,9 +23,9 @@ int main( int argc, char* argv[] ) {
     sleep(3);
     printf("telemoveis 10 100\n");
     fflush(stdin);
-    sleep(10);
+    sleep(5);
     printf("carros 100 150\n");
+    fflush(stdin);
+    sleep(1);
     exit(0);
-
-    return 1;
 }

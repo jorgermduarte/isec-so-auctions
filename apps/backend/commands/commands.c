@@ -410,7 +410,7 @@ void exec_command_sell(struct Backend *app, int pid_response, struct string_list
             {
                 app->items[i] = item_for_sale;
                 added = 1;
-                sprintf(message_to_send, "Auction for %s is ongoing\n", item_for_sale.name);
+                sprintf(message_to_send, "Auction for %s is ongoing. Seller is %s and the base price is %d€\n", item_for_sale.name, item_for_sale.seller_name, item_for_sale.current_value);
                 break;
             }
         }
@@ -418,8 +418,12 @@ void exec_command_sell(struct Backend *app, int pid_response, struct string_list
         if (added == 0)
             sprintf(message_to_send, "Auction for %s did not start because of the maximum of auctions reached.\n", item_for_sale.name);
 
-        // notify the frontend
-        send_message_frontend(message_to_send, pid_response);
+        for (int i = 0; i < app->config->max_users_allowed; i++)
+        {
+            if(app->users[i].pid != -1 && app->users[i].pid != 0){
+                send_message_frontend(message_to_send, app->users[i].pid);
+            }
+        }
 
         reset_heartbit_counter(app, pid_response);
     }

@@ -737,7 +737,7 @@ void exec_command_list(struct Backend *app,int pid_response)
             if(pid_response != -1) {
                 send_message_frontend(message_to_send, pid_response);
             }else{
-                printf("Item %d: %s, BN: %d CV: %d CT: %s CB: %s\n", app->items[item_index].unique_id, app->items[item_index].name, app->items[item_index].buy_now_value, app->items[item_index].current_value, app->items[item_index].category, app->items[item_index].bidder_name);
+                printf("        > Item %d: %s, BN: %d CV: %d CT: %s CB: %s\n", app->items[item_index].unique_id, app->items[item_index].name, app->items[item_index].buy_now_value, app->items[item_index].current_value, app->items[item_index].category, app->items[item_index].bidder_name);
             }
         }
         item_index++;

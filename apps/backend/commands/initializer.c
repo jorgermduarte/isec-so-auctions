@@ -61,17 +61,17 @@ int command_try_execution(char *command, struct string_list *arguments, int pid_
     {
         exec_command_kick(app, arguments);
     }
-    else if (command_validate_name(command, "prom"))
+    else if (command_validate_name(command, "prom") && pid_response == -1 ) // only available to the backend
     {
         exec_command_prom(app);
     }
-    else if (command_validate_name(command, "reprom"))
+    else if (command_validate_name(command, "reprom") && pid_response == -1)  // only available to the backend
     {
-        exec_command_reprom();
+        exec_command_reprom(app);
     }
     else if (command_validate_name(command, "cancel"))
     {
-        exec_command_cancel_prom(arguments);
+        exec_command_cancel_prom(app,arguments);
     }
     else if (command_validate_name(command, "close"))
     {

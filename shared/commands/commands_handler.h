@@ -53,6 +53,3 @@ int command_validate_name(char* command, char* target);
  * @param list
  */
 void clean_linked_list(struct string_list* list);
-
-
-//TODO:implement a method to clean the memory from the linked list since we are using mallocs etc

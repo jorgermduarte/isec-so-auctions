@@ -554,17 +554,99 @@ void exec_command_prom(struct Backend *app)
 }
 
 // update promoters
-void exec_command_reprom()
+void exec_command_reprom(struct Backend* app)
 {
     printf("     > Executing the update promoters command\n");
+
+    Promotor *currentPromotor = app->promotors;
+    int current = 0;
+    while (current < app->config->max_promotors_allowed)
+    {
+        if (currentPromotor->valid == 1)
+        {
+            printf("      > Promotor canceled %d: %s \n", currentPromotor->pid, currentPromotor->name);
+            kill(currentPromotor->pid, SIGUSR1);
+        }
+        currentPromotor++;
+        current++;
+    }
+
+    // reset the promoters
+    currentPromotor = app->promotors;
+    current = 0;
+    while (current < app->config->max_promotors_allowed)
+    {
+        currentPromotor->valid = 0;
+        currentPromotor->pid = -1;
+        currentPromotor++;
+        current++;
+    }
+
+    // start the promoters reading the config file again
+    FILE *fp;
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+
+    fp = fopen(app->config->f_promotors, "r");
+
+    if (fp == NULL)
+        printf("     > Error opening the promoters file\n");
+    else{
+        int currentPromotorIndex = 0;
+        while ((read = getline(&line, &len, fp)) != -1) {
+            if(currentPromotorIndex < app->config->max_promotors_allowed){
+                // create the new promoter
+                //Promotor* newPromotor = &app->promotors[currentPromotorIndex];
+                //newPromotor->valid = 1;
+                //newPromotor->pid = fork();
+                //if(newPromotor->pid == 0){
+                    // child process
+                    // execute the promoter
+                    // TODO: execute the promoter logic
+                    //char* args[] = {"./", line, NULL};
+                    //execv(args[0], args);
+                //}else{
+                    // parent process
+                //    strcpy(newPromotor->name, line);
+                    //printf("      > Promotor created %d: %s \n", newPromotor->pid, newPromotor->name);
+                //}
+            }
+            currentPromotorIndex++;
+        }
+
+    }
 }
 
 // cancel promoter
-void exec_command_cancel_prom(struct string_list *arguments)
+void exec_command_cancel_prom(struct Backend* app, struct string_list *arguments)
 {
     if (arguments != NULL)
     {
         printf("     > Executing the cancel promoter command, canceling promoter: %s\n", arguments->string);
+
+        int current_index = 0;
+        bool found = false;
+        Promotor *currentPromotor = app->promotors;
+        while( current_index < app->config->max_promotors_allowed){
+            if(currentPromotor->valid == 1 && strcmp(currentPromotor->name, arguments->string) == 0){
+                // found the promoter
+                currentPromotor->valid = 0;
+
+                // kill the process
+                kill(currentPromotor->pid, SIGKILL);
+
+                found = true;
+                printf("     > Promotor %d: %s was canceled \n", currentPromotor->pid, currentPromotor->name);
+                break;
+            }
+            currentPromotor++;
+            current_index++;
+        }
+
+        if(found == false){
+            printf("     > Promotor %s was not found \n", arguments->string);
+        }
     }
     else
     {

@@ -119,14 +119,15 @@ int main(int argc, char *argv[])
         }
     }
 
-    // receive messages from promotors with selects
+    // receive messages from promoters with selects
+    // TODO: bug detected after some promoters messages we receive spam! (not sure if it is the last line)
     do
     {
         tv.tv_sec = 5;
         tv.tv_usec = 0;
         FD_ZERO(&read_fds);
 
-        int biggest_fd = get_max_promoter_fd(app->promotors, app->config->max_promotors_allowed);
+        int biggest_fd = get_max_promoter_fd(app);
 
         for (int i = 0; i < app->config->max_promotors_allowed; i++)
         {
@@ -140,27 +141,19 @@ int main(int argc, char *argv[])
             kill(getpid(), SIGINT);
         }
 
-        read_promoter_message(app->promotors[0], read_fds);
-
-        read_promoter_message(app->promotors[1], read_fds);
-
-        read_promoter_message(app->promotors[2], read_fds);
-
-        read_promoter_message(app->promotors[3], read_fds);
-
-        read_promoter_message(app->promotors[4], read_fds);
-
-        read_promoter_message(app->promotors[5], read_fds);
-
-        read_promoter_message(app->promotors[6], read_fds);
-
-        read_promoter_message(app->promotors[7], read_fds);
-
-        read_promoter_message(app->promotors[8], read_fds);
-
-        read_promoter_message(app->promotors[9], read_fds);
-
+        for (int i = 0; i < app->config->max_promotors_allowed; i++)
+        {
+            if(app->promotors[i].valid == 1){
+                if (FD_ISSET(app->promotors[i].fd[0], &read_fds))
+                {
+                    char buffer[1024];
+                    read(app->promotors[i].fd[0], buffer, 1024);
+                    rbash();
+                    printf("\n[Promoter %s - p%d] sent the following message : %s\033[0m", app->promotors[i].name, app->promotors[i].pid, buffer);
+                    creset();
+                }
+            }
+        }
+        sleep(0.1);
     } while (1);
-
-    return 1;
 }

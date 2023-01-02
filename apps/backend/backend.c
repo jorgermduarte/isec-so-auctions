@@ -128,7 +128,6 @@ void *frontend_heartbit_handler(void *pdata)
 
 void *command_thread_handler(void *pdata)
 {
-    // TODO: right now we are not doing anything with the Backend app structure
     Backend *app = (Backend *)pdata;
 
     // initialize the logic to receive command inputs
@@ -322,15 +321,19 @@ void *load_promoters_from_file(char *filename, Promotor *promoters)
         free(line);
 }
 
-int get_max_promoter_fd(Promotor *promoters, int size)
+int get_max_promoter_fd(struct Backend* app)
 {
-    for (size_t i = 0; i < size; i++)
+    int max = 0;
+    for (int i = 0; i < app->config->max_promotors_allowed; i++)
     {
-        if (promoters[i].valid != 1)
+        if (app->promotors[i].valid == 1)
         {
-            return promoters[--i].fd[0] + 1;
+            max = i;
         }
     }
+    // always returns plus 1 because the index starts at 0
+
+    return app->promotors[max].fd[0] + 1;
 }
 
 void read_promoter_message(Promotor promoter, fd_set read_fds)
@@ -338,6 +341,7 @@ void read_promoter_message(Promotor promoter, fd_set read_fds)
     char buffer[20] = "\0";
     if (promoter.valid == 1)
     {
+        printf(" > reading message from promoter %s\n", promoter.name);
         if (FD_ISSET(promoter.fd[0], &read_fds))
         {
             int size = read(promoter.fd[0], buffer, sizeof(buffer));

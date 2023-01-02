@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
                     int size = read(app->promotors[i].fd[0], buffer, 1024);
                     if(size > 0){
                         rbash();
-                        printf("\n[Promoter %s - p%d] sent the following message : %s\033[0m", app->promotors[i].name, app->promotors[i].pid, buffer);
+                        printf("Promoter %s - p%d] sent the following message : %s \n", app->promotors[i].name, app->promotors[i].pid, buffer);
                         creset();
                     }else{
                         //printf(" > Reached the end of the pipe for promoter %s - p%d \n", app->promotors[i].name, app->promotors[i].pid);

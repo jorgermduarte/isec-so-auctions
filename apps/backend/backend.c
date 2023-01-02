@@ -50,8 +50,6 @@ void *auctions_duration_handler(void *pdata)
 {
     Backend *app = (Backend *)pdata;
 
-    User logged_in_user;
-
     char message_to_send[256] = "";
     while (app->threads.running)
     {
@@ -59,19 +57,38 @@ void *auctions_duration_handler(void *pdata)
         {
             if (app->items[i].active == 1)
             {
-                if (app->items[i].duration == 0)
+                if (app->items[i].duration <= 0)
                 {
-                    sprintf(message_to_send, "Auction for item %s has ended.", app->items[i].name);
-                    logged_in_user = get_logged_in_user(app, -1, app->items[i].seller_name);
-                    if (logged_in_user.pid != 0)
-                    {                        
-                        send_message_frontend(message_to_send, logged_in_user.pid);
-                        strcpy(message_to_send, "\0");
+                    app->items[i].active = 0;
+
+                    // send message to all frontend applications
+                    int current_user = 0;
+                    while ( current_user < app->config->max_users_allowed)
+                    {
+                        if (app->users[current_user].pid != 0 && app->users[current_user].pid != -1)
+                        {
+                            if(strcmp(app->users[current_user].username, app->items[i].seller_name) == 0) // is the seller of the item
+                            {
+                                //notify the seller than is auction is over
+                                sprintf(message_to_send,"Your auction for the item %s has ended. The winner is %s with a bid of %d ", app->items[i].name, app->items[i].bidder_name, app->items[i].current_value);
+                                send_message_frontend(message_to_send,app->users[current_user].pid);
+                            }else{
+
+                                if(strcmp(app->users[current_user].username, app->items[i].bidder_name) == 0) // is the winner of the auction
+                                {
+                                    //notify the winner than is auction is over
+                                    sprintf(message_to_send, "You won the auction for the item %s with a bid of %d ",
+                                            app->items[i].name, app->items[i].current_value);
+                                    send_message_frontend(message_to_send, app->users[current_user].pid);
+                                }else{
+                                    sprintf(message_to_send, "Auction for item %s has ended.", app->items[i].name);
+                                    send_message_frontend(message_to_send, app->users[current_user].pid);
+                                }
+                            }
+                        }
+                        current_user++;
                     }
 
-                    printf(" > %s\n", message_to_send);
-
-                    app->items[i].active = 0;
                     break;
                 }
 

@@ -492,7 +492,7 @@ void exec_command_buy(struct Backend* app, int pid_response, struct string_list 
                                 User* current_user = app->users;
                                 int total_users = 0;
                                 while(total_users < app->config->max_users_allowed){
-                                    if(current_user->pid != -1 && current_user->pid != pid_response){
+                                    if(current_user->pid != -1 && current_user->pid != 0 && current_user->pid != pid_response){
                                         send_message_frontend(message_to_send2, current_user->pid);
                                     }
                                     current_user++;
@@ -647,11 +647,11 @@ void exec_command_list(struct Backend *app,int pid_response)
     while(item_index < app->config->max_auctions_active){
         if(app->items[item_index].active == 1){
             char message_to_send[255] = "";
-            sprintf(message_to_send, "Item %d: %s, BN: %d CV: %d CT: %s", app->items[item_index].unique_id, app->items[item_index].name, app->items[item_index].buy_now_value, app->items[item_index].current_value, app->items[item_index].category);
+            sprintf(message_to_send, "Item %d: %s, BN: %d CV: %d CT: %s CB: %s", app->items[item_index].unique_id, app->items[item_index].name, app->items[item_index].buy_now_value, app->items[item_index].current_value, app->items[item_index].category, app->items[item_index].bidder_name);
             if(pid_response != -1) {
                 send_message_frontend(message_to_send, pid_response);
             }else{
-                printf("Item %d: %s, BN: %d CV: %d CT: %s\n", app->items[item_index].unique_id, app->items[item_index].name, app->items[item_index].buy_now_value, app->items[item_index].current_value, app->items[item_index].category);
+                printf("Item %d: %s, BN: %d CV: %d CT: %s CB: %s\n", app->items[item_index].unique_id, app->items[item_index].name, app->items[item_index].buy_now_value, app->items[item_index].current_value, app->items[item_index].category, app->items[item_index].bidder_name);
             }
         }
         item_index++;

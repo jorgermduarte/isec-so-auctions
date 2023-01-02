@@ -26,7 +26,7 @@ void exec_command_list_users(struct Backend* app);
 void exec_command_prom(struct Backend* app);
 
 // TODO: commands to implement from the backend application
-void exec_command_kick(struct string_list* arguments);
+void exec_command_kick(struct Backend* app, struct string_list* arguments);
 // update promoters
 void exec_command_reprom();
 // cancel promoter

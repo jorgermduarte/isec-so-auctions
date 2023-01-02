@@ -396,17 +396,18 @@ void exec_command_sell(struct Backend *app, int pid_response, struct string_list
             .current_value = atoi(arguments->next->next->string),
             .duration = atoi(arguments->next->next->next->next->string),
             .identifier = "",
-            .active = 1
-        };
+            .active = 1};
 
         strcpy(item_for_sale.category, arguments->next->string);
         strcpy(item_for_sale.name, arguments->string);
         strcpy(item_for_sale.seller_name, logged_in_user.username);
-        
+
         char message_to_send[255] = "";
         int added = 0;
-        for(int i = 0; i < app->config->max_auctions_active; i++){
-            if(app->items[i].active != 1){
+        for (int i = 0; i < app->config->max_auctions_active; i++)
+        {
+            if (app->items[i].active != 1)
+            {
                 app->items[i] = item_for_sale;
                 added = 1;
                 sprintf(message_to_send, "Auction for %s is ongoing\n", item_for_sale.name);
@@ -414,11 +415,10 @@ void exec_command_sell(struct Backend *app, int pid_response, struct string_list
             }
         }
 
-        if(added == 0)
+        if (added == 0)
             sprintf(message_to_send, "Auction for %s did not start because of the maximum of auctions reached.\n", item_for_sale.name);
 
-
-        // notify the frontend  
+        // notify the frontend
         send_message_frontend(message_to_send, pid_response);
 
         reset_heartbit_counter(app, pid_response);
@@ -432,9 +432,9 @@ void exec_command_prom(struct Backend *app)
 {
     printf("     > Executing the list promoters command\n");
 
-    Promotor* currentPromotor = app->promotors;
+    Promotor *currentPromotor = app->promotors;
     int current = 0;
-    while ( current < app->config->max_promotors_allowed)
+    while (current < app->config->max_promotors_allowed)
     {
         if (currentPromotor->valid == 1)
         {
@@ -443,7 +443,6 @@ void exec_command_prom(struct Backend *app)
         currentPromotor++;
         current++;
     }
-
 }
 
 // update promoters
@@ -465,11 +464,27 @@ void exec_command_cancel_prom(struct string_list *arguments)
     }
 }
 
-void exec_command_kick(struct string_list *arguments)
+void exec_command_kick(struct Backend *app, struct string_list *arguments)
 {
     if (arguments != NULL)
     {
         printf("     > Executing the kick user command, kicking the user: %s\n", arguments->string);
+
+        User user = get_logged_in_user(app, -1, arguments->string);
+        for (int i = 0; i < app->config->max_users_allowed; i++)
+        {
+            if(strcmp(user.username, arguments->string) != 0){
+                printf("     > Failed to execute the kick command, user %s not found.\n", arguments->string);
+                break;
+            }
+
+            if (app->frontendPids[i] == user.pid)
+            {
+                app->frontendPids[i] == 0;
+                kill(user.pid, SIGINT);
+                user.pid = -1;
+            }
+        }
     }
     else
     {

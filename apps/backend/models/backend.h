@@ -6,7 +6,6 @@
 #include <sys/select.h>
 #include "user.h"
 #include "promotor.h"
-#include "auction.h"
 #include "../config/config.h"
 #include "../../../shared/helpers/pipes.h"
 

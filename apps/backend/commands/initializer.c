@@ -54,7 +54,7 @@ int command_try_execution(char *command, struct string_list *arguments, int pid_
     }
     else if (command_validate_name(command, "kick"))
     {
-        exec_command_kick(arguments);
+        exec_command_kick(app, arguments);
     }
     else if (command_validate_name(command, "prom"))
     {

@@ -92,7 +92,6 @@ int main(int argc, char *argv[])
     {
         if (app->promotors[i].valid == 1)
         {
-            // TODO: detect bug here only starts one of the promoters           
             pipe(app->promotors[i].fd);
             int fork_id = fork();
             if (fork_id == 0)

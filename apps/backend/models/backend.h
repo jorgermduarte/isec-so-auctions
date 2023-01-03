@@ -8,6 +8,7 @@
 #include "promotor.h"
 #include "../config/config.h"
 #include "../../../shared/helpers/pipes.h"
+#include "promotions.h"
 
 typedef struct Threads
 {
@@ -30,6 +31,7 @@ typedef struct Backend
     Config *config;    
     Item *items;
     Promotor *promotors;
+    struct Promotions *promotions;
     User *users;
 
     Threads threads;

@@ -20,6 +20,7 @@ Backend *bootstrap()
     // define config values
     Config *config = get_env_variables();
     app->config = config;
+    app->promotions = NULL;
 
     // Read data from files
     load_items_from_file(app->config->f_items, app);

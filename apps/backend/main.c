@@ -29,7 +29,8 @@ void close_platform(int s, siginfo_t *info, void *c)
     printf("[BACKEND] Order clients to terminate...\n");
     for (int i = 0; i < app->config->max_users_allowed; i++)
     {
-        if(app->frontendPids[i] != 0){
+        if (app->frontendPids[i] != 0)
+        {
             kill(app->frontendPids[i], SIGINT);
         }
     }
@@ -46,7 +47,6 @@ void close_platform(int s, siginfo_t *info, void *c)
     pthread_kill(app->threads.pthread_backend_commands, SIGUSR1);
     pthread_join(app->threads.pthread_backend_commands, NULL);
 
-
     sleep(2);
 
     // unlink backend fifo
@@ -54,7 +54,6 @@ void close_platform(int s, siginfo_t *info, void *c)
     close(app->pipeBackend.fd);
     unlink(BACKEND_FIFO_NAME);
 
-    
     exit(1);
 }
 
@@ -134,31 +133,56 @@ int main(int argc, char *argv[])
         }
 
         nfd = select(biggest_fd, &read_fds, NULL, NULL, &tv);
-        if(nfd == -1){
+        if (nfd == -1)
+        {
             perror("[ERROR] SELECT");
             kill(getpid(), SIGINT);
         }
 
         for (int i = 0; i < app->config->max_promotors_allowed; i++)
         {
-            if(app->promotors[i].valid == 1){
+            if (app->promotors[i].valid == 1)
+            {
                 if (FD_ISSET(app->promotors[i].fd[0], &read_fds))
                 {
-                    char buffer[1024];
-                    int size = read(app->promotors[i].fd[0], buffer, 1024);
-                    if(size > 0){
+                    char buffer[25];
+                    int size = read(app->promotors[i].fd[0], buffer, 256);
+                    if (size > 0)
+                    {
+                        struct Promotions *new_promotion = malloc(sizeof(struct Promotions));
+
+                        char* token = strtok(buffer, " ");
+                        char *category = token;
+                        token = strtok(NULL, " ");
+                        int amount = atoi(token);
+                        token = strtok(NULL, " ");
+                        int time = atoi(token);
+
+                        int id = 0;
+                        if(app->promotions != NULL){
+                            id = getTailPromotions(app->promotions)->id + 1;
+                        }
+                        new_promotion->id = id;
+                        new_promotion->valid = 1;
+                        new_promotion->value = amount;
+                        new_promotion->time = time;
+                        strcpy(new_promotion->category, category);
+
+                        addPromotion(&app->promotions, new_promotion);
+
                         rbash();
-                        printf("Promoter %s - p%d] sent the following message : %s \n", app->promotors[i].name, app->promotors[i].pid, buffer);
+                        printf("\n[ Promoter %s with pid %d ] New promotion for %s category started with %d%% off during %d seconds.\n\n", app->promotors[i].name, app->promotors[i].pid, category, amount, time);
                         creset();
-                    }else{
-                        //printf(" > Reached the end of the pipe for promoter %s - p%d \n", app->promotors[i].name, app->promotors[i].pid);
+                    }
+                    else
+                    {
+                        // printf(" > Reached the end of the pipe for promoter %s - p%d \n", app->promotors[i].name, app->promotors[i].pid);
                         app->promotors[i].valid = 0;
                         kill(app->promotors[i].pid, SIGINT);
                     }
-
                 }
             }
         }
-        sleep(0.1);
+        sleep(1);
     } while (1);
 }

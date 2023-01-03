@@ -3,26 +3,33 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct Promotions* getTailPromotions(struct Promotions *head){
+struct Promotions *getTailPromotions(struct Promotions *head)
+{
     struct Promotions *current = head;
-    while (current->next != NULL) {
+    while (current->next != NULL)
+    {
         current = current->next;
     }
     return current;
 }
 
-struct Promotions* getHeadPromotions(struct Promotions **tail){
+struct Promotions *getHeadPromotions(struct Promotions **tail)
+{
     struct Promotions *current = *tail;
-    while (current != NULL) {
+    while (current != NULL)
+    {
         current = current->prev;
     }
     return current;
 }
 
-struct Promotions* getPromotionById(struct Promotions **head, int id){
+struct Promotions *getPromotionById(struct Promotions **head, int id)
+{
     struct Promotions *current = *head;
-    while (current != NULL) {
-        if (current->id == id) {
+    while (current != NULL)
+    {
+        if (current->id == id)
+        {
             return current;
         }
         current = current->next;
@@ -30,31 +37,55 @@ struct Promotions* getPromotionById(struct Promotions **head, int id){
     return NULL;
 }
 
-void addPromotion(struct Promotions **head, struct Promotions *promotion){
-    if (*head == NULL) {
+struct Promotions *getPromotionByCategory(struct Promotions **head, char *category)
+{
+    struct Promotions *current = *head;
+    while (current != NULL)
+    {
+        if (strcmp(current->category, category) == 0)
+        {
+            return current;
+        }
+        current = current->next;
+    }
+    return NULL;
+}
+
+void addPromotion(struct Promotions **head, struct Promotions *promotion)
+{
+    if (*head == NULL)
+    {
         *head = promotion;
-    } else {
+    }
+    else
+    {
         struct Promotions *tail = getTailPromotions(*head);
-        if (tail != NULL) {
-            printf(" adding child\n");
+        if (tail != NULL)
+        {
             tail->next = promotion;
             promotion->prev = tail;
         }
     }
 }
 
-void removePromotion(struct Promotions **head, int id){
+void removePromotion(struct Promotions **head, int id)
+{
     struct Promotions *current = *head;
-    while (current != NULL) {
-        if (current->id == id) {
-            if (current->prev != NULL) {
+    while (current != NULL)
+    {
+        if (current->id == id)
+        {
+            if (current->prev != NULL)
+            {
                 current->prev->next = current->next;
             }
-            if (current->next != NULL) {
+            if (current->next != NULL)
+            {
                 current->next->prev = current->prev;
             }
 
-            if(current->prev == NULL && current->next == NULL){
+            if (current->prev == NULL && current->next == NULL)
+            {
                 *head = NULL;
             }
 
@@ -66,10 +97,13 @@ void removePromotion(struct Promotions **head, int id){
     }
 }
 
-void updatePromotion(struct Promotions **head, int id, struct Promotions *promotion){
+void updatePromotion(struct Promotions **head, int id, struct Promotions *promotion)
+{
     struct Promotions *current = *head;
-    while (current != NULL) {
-        if (current->id == id) {
+    while (current != NULL)
+    {
+        if (current->id == id)
+        {
             strcpy(current->category, promotion->category);
             current->time = promotion->time;
             current->value = promotion->value;
@@ -80,13 +114,18 @@ void updatePromotion(struct Promotions **head, int id, struct Promotions *promot
     }
 }
 
-void displayPromotions(struct Promotions *head){
+void displayPromotions(struct Promotions *head)
+{
     struct Promotions *current = head;
 
-    if(current == NULL){
+    if (current == NULL)
+    {
         printf("No promotions found to list\n");
-    }else{
-        while(current != NULL) {
+    }
+    else
+    {
+        while (current != NULL)
+        {
             printf("    > id: %d - category: %s - time: %d - value: %d - valid: %d \n ", current->id, current->category,
                    current->time, current->value, current->valid);
             current = current->next;

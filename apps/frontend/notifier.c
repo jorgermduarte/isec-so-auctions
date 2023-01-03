@@ -13,7 +13,7 @@ void send_message_backend(char *message) {
     strcpy(request.arguments, message);
 
     Response response = { .result = ""};
-    printf(" > [%d] Sending to backend the following message: %s  \n",pid,message);
+    //printf(" > [%d] Sending to backend the following message: %s  \n",pid,message);
 
     Message msg;
 
@@ -25,14 +25,14 @@ void send_message_backend(char *message) {
     fd = open(BACKEND_FIFO_NAME,O_WRONLY);
 
     if(fd == -1){
-        printf(" > Error opening backend fifo to send the message \n");
+        printf("\n ::> Error opening backend fifo to send the message \n");
     }else{
         if (write(fd, &msg, sizeof(msg)) != sizeof(msg)) {
-            printf(" > Error writing to backend fifo \n");
+            printf("\n ::> Error writing to backend fifo \n");
         }
     }
 
     if (close(fd) == -1) {
-        printf(" > Error closing backend fifo  \n");
+        printf("\n ::> Error closing backend fifo  \n");
     }
 }

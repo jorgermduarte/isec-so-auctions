@@ -41,6 +41,6 @@ void send_message_frontend(char *message, int pid){
     fd = open(pipe_name,O_RDWR);
     //printf("     > pipe opened\n");
     write(fd, &msg, sizeof(msg));
-    printf("        > Msg written successfully on pipe: %s\n",pipe_name);
+    //printf("        > Msg written successfully on pipe: %s\n",pipe_name);
     close(fd);
 }

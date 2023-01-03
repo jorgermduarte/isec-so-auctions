@@ -46,7 +46,7 @@ void* backend_communication_receiver_handler(void* data)
 {
     Frontend* client = (Frontend*)data;
     Message msg;
-    printf(" > [INFO] FRONTEND COMMUNICATION RECEIVER HANDLER STARTED FOR PIPE: %s\n",client->fifo_name);
+    //printf(" > [INFO] FRONTEND COMMUNICATION RECEIVER HANDLER STARTED FOR PIPE: %s\n",client->fifo_name);
 
     while(client->frontend_responses.lock){
         client->fifo_fd = open(client->fifo_name,  O_RDONLY);
@@ -56,13 +56,13 @@ void* backend_communication_receiver_handler(void* data)
             int read_size = sizeof(msg) + 1;
             int size = read(client->fifo_fd, &msg, read_size);
             if(size > 0) {
-                printf(" > [RECEIVED RESPONSE FROM BACKEND]: %s\n", msg.response.result);
+                printf("\n [Message from backend]: %s\n", msg.response.result);
 
                 //verify if the message is a response to a login request
                 if(strcmp(msg.response.result, "LOGIN_SUCCESS") == 0){
                     //set the user as logged in
                     auth.is_logged_in = 1;
-                    printf(" > [INFO] YOU HAVE LOGGED IN SUCCESSFULLY\n");
+                    printf("\n [INFO] YOU HAVE LOGGED IN SUCCESSFULLY\n");
                 }
             }
         }
@@ -97,7 +97,7 @@ void initialize_frontend(char* username, char* password){
     char* pipe_name = FRONTEND_FIFO_NAME_BASE;
     strcat(pipe_name_result,FRONTEND_FIFO_NAME_BASE);
     strcat(pipe_name_result,pid_string);
-    printf(" > [INFO] FRONTEND PIPE NAME DEFINED: %s\n", pipe_name_result);
+    //printf(" > [INFO] FRONTEND PIPE NAME DEFINED: %s\n", pipe_name_result);
 
     client->fifo_name = pipe_name_result;
     client->frontend_responses.lock = 1;

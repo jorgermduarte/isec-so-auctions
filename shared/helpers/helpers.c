@@ -49,7 +49,7 @@ void bbash()
 
 void rbash()
 {
-    printf("\e[1;5;31m");
+    printf("\e[0;31m");
 }
 
 void creset()

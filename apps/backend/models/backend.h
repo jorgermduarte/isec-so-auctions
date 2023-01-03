@@ -16,6 +16,7 @@ typedef struct Threads
     pthread_t pthread_frontend_requests;
     pthread_t pthread_frontend_heartbit;
     pthread_t pthread_auctions_duration;
+    pthread_t pthread_promotions_duration;
     int running;
 } Threads;
 
@@ -51,6 +52,7 @@ void *command_thread_handler(void *pdata);
 void *frontend_communication_receiver_handler(void *pdata);
 void *frontend_heartbit_handler(void *pdata);
 void *auctions_duration_handler(void *pdata);
+void *promotions_duration_handler(void *pdata);
 
 void frontend_communication_fifo_initializer();
 void check_backend_duplicate_execution();
@@ -62,3 +64,4 @@ int reset_heartbit_counter(Backend* app, pid_t pid);
 
 User get_logged_in_user(Backend* app, pid_t pid, char *seller);
 User* find_user_by_pid(Backend *app, pid_t pid);
+int getBiggestItemId(Backend *app);

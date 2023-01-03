@@ -9,7 +9,7 @@ void exec_command_cash(struct Backend *app, int pid_response)
 {
     if (pid_response != -1)
     { // only available for frontend apps
-        printf("     > Executing the cash command \n");
+        //printf("     > Executing the cash command \n");
 
         char *target_username;
         bool foundUser = false;
@@ -23,7 +23,7 @@ void exec_command_cash(struct Backend *app, int pid_response)
             {
                 if (current_user->pid == pid_response)
                 {
-                    printf("     > Found the user! : %s \n", current_user->username);
+                    //printf("     > Found the user! : %s \n", current_user->username);
                     foundUser = true;
                     target_username = current_user->username;
                 }
@@ -55,7 +55,7 @@ void exec_command_verify_login(struct string_list *arguments, struct Backend *ap
 
             char *username = arguments->string;
             char *password = arguments->next->string;
-            printf("     > Executing the verify login command\n");
+            //printf("     > Executing the verify login command\n");
 
             int login = isUserValid(username, password);
 
@@ -88,7 +88,7 @@ void exec_command_verify_login(struct string_list *arguments, struct Backend *ap
             }
             else
             {
-                printf("      > User %s with password %s is logged in\n", username, password);
+                //printf("      > User %s with password %s is logged in\n", username, password);
                 send_message_frontend("LOGIN_SUCCESS", pid_response);
             }
         }
@@ -135,7 +135,7 @@ void exec_command_licat(struct Backend *app, int pid_response, struct string_lis
     if (pid_response != -1 && arguments != NULL && arguments->string != NULL)
     {
         char *category = arguments->string;
-        printf("     > Executing the licat command with category: %s \n", category);
+        //printf("     > Executing the licat command with category: %s \n", category);
 
         struct Item *currentItem = app->items;
         int total_items = 0;
@@ -329,7 +329,7 @@ void exec_add_money_to_user(struct Backend *app, int pid_response, struct string
 {
     if (arguments != NULL && pid_response != -1 && arguments->string != NULL)
     {
-        printf("     > Executing the add money command \n");
+        //printf("     > Executing the add money command \n");
 
         // find username based on the pid
         char *target_username;
@@ -396,7 +396,9 @@ void exec_command_sell(struct Backend *app, int pid_response, struct string_list
             .current_value = atoi(arguments->next->next->string),
             .duration = atoi(arguments->next->next->next->next->string),
             .identifier = "",
-            .active = 1};
+            .active = 1,
+            .unique_id = getBiggestItemId(app)+1
+            };
 
         strcpy(item_for_sale.category, arguments->next->string);
         strcpy(item_for_sale.name, arguments->string);
@@ -420,7 +422,7 @@ void exec_command_sell(struct Backend *app, int pid_response, struct string_list
 
         for (int i = 0; i < app->config->max_users_allowed; i++)
         {
-            if(app->users[i].pid != -1 && app->users[i].pid != 0){
+            if(app->frontendPids[i] != 0){
                 send_message_frontend(message_to_send, app->users[i].pid);
             }
         }
@@ -441,8 +443,11 @@ void exec_command_buy(struct Backend* app, int pid_response, struct string_list 
             // find the item
             int item_index = 0;
             bool foundItem = false;
+            struct Promotions *active_promotion = malloc(sizeof(struct Promotions));
+            
             while( item_index < app->config->max_auctions_active){
                 if( app->items[item_index].active == 1 && app->items[item_index].unique_id == itemIdentifier){
+                    active_promotion = getPromotionByCategory(&app->promotions, app->items[item_index].category);
                     foundItem = true;
                     // found the item
                     User* loggedUser = find_user_by_pid(app, pid_response);
@@ -463,16 +468,23 @@ void exec_command_buy(struct Backend* app, int pid_response, struct string_list 
                                 app->items[item_index].active = 0;
 
                                 // update the user balance based on the buy_now_value
-                                updateUserBalance(loggedUser->username, userBalance - app->items[item_index].buy_now_value);
+                                double discount_percentage = 100;
+                                if(active_promotion != NULL){
+                                    discount_percentage = (discount_percentage - (double)active_promotion->value) / 100;
+                                }else{
+                                    discount_percentage = 1;
+                                }              
+                                int amount_to_pay = app->items[item_index].current_value * discount_percentage;
+                                updateUserBalance(loggedUser->username, userBalance - amount_to_pay);
 
                                 // notify the frontend
                                 char message_to_send[255] = "";
-                                sprintf(message_to_send, "You bought the item %s for %d", app->items[item_index].name, amountNumber);
+                                sprintf(message_to_send, "You bought the item %s for %d", app->items[item_index].name, amount_to_pay);
                                 send_message_frontend(message_to_send, pid_response);
 
                                 // notify every frontend that the item was sold expect for the user that bought the item
                                 char message_to_send2[255] = "";
-                                sprintf(message_to_send2, "The item %s was sold for %d to the user: %s", app->items[item_index].name, amountNumber, loggedUser->username);
+                                sprintf(message_to_send2, "The item %s was sold for %d to the user: %s", app->items[item_index].name, amount_to_pay, loggedUser->username);
 
                                 User* current_user = app->users;
                                 int total_users = 0;
@@ -735,7 +747,7 @@ void exec_command_list_users(struct Backend *app)
 // list all items
 void exec_command_list(struct Backend *app,int pid_response)
 {
-    printf("     > Executing the list all items command\n");
+    //printf("     > Executing the list all items command\n");
 
     int item_index = 0;
 

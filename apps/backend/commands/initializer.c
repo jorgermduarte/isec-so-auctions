@@ -5,7 +5,7 @@
 
 int command_try_execution(char *command, struct string_list *arguments, int pid_response, Backend *app)
 {
-    printf("    > Verifying command existence\n");
+    //printf("    > Verifying command existence\n");
     int exit = 0;
 
     if (command_validate_name(command, "list"))
@@ -100,7 +100,8 @@ void command_handler_start(Backend *app)
         pthread_exit(0);
     }
 
-    printf(" > [INFO] WE ARE LISTENING TO ANY COMMAND:\n");
+    //printf(" > [INFO] WE ARE LISTENING TO ANY COMMAND:\n");
+    printf("\n> ");
     fgets(buffer, bufsize, stdin);
 
     if (app->threads.running == 0)

@@ -1,7 +1,7 @@
 #include "initializer.h"
 
 int command_try_execution(char *command, struct string_list *arguments) {
-    printf("    > Verifying command existence\n");
+    //printf("    > Verifying command existence\n");
     int exit = 0;
 
     if (command_validate_name(command, "list")) {
@@ -36,9 +36,10 @@ void command_handler_start() {
     size_t bufsize = 255;
     char buffer[bufsize];
 
-    printf(" > [INFO] WE ARE LISTENING TO ANY COMMAND:\n\n");
+    //printf(" > [INFO] WE ARE LISTENING TO ANY COMMAND:\n\n");
+    printf("\n> ");
     fgets(buffer, bufsize, stdin);
-    printf(" > Command received: %s", buffer);
+    //printf(" > Command received: %s", buffer);
 
     size_t len = strlen(buffer);
 

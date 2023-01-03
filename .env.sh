@@ -6,7 +6,7 @@ export MAX_ACTIVE_AUCTIONS=30
 export FPROMOTERS="file_promoters.txt"
 export FUSERS="file_users.txt"
 export FITEMS="file_items.txt"
-export KEEPALIVE_FRONTEND=60
+export KEEPALIVE_FRONTEND=180
 
 echo "############################################"
 echo "###     SETTING ENVIRONMENT VARIABLES    ###"

@@ -17,7 +17,7 @@
 - [x] list
 - [x] kick
 - [x] prom
-- [ ] reprom
+- [x] reprom
 - [x] cancel
 - [x] close
 

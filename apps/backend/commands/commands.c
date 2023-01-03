@@ -567,17 +567,11 @@ void exec_command_reprom(struct Backend* app)
             printf("      > Promotor canceled %d: %s \n", currentPromotor->pid, currentPromotor->name);
             kill(currentPromotor->pid, SIGUSR1);
         }
-        currentPromotor++;
-        current++;
-    }
 
-    // reset the promoters
-    currentPromotor = app->promotors;
-    current = 0;
-    while (current < app->config->max_promotors_allowed)
-    {
+        // reset the promoters
         currentPromotor->valid = 0;
         currentPromotor->pid = -1;
+
         currentPromotor++;
         current++;
     }
@@ -595,22 +589,37 @@ void exec_command_reprom(struct Backend* app)
     else{
         int currentPromotorIndex = 0;
         while ((read = getline(&line, &len, fp)) != -1) {
+
             if(currentPromotorIndex < app->config->max_promotors_allowed){
                 // create the new promoter
-                //Promotor* newPromotor = &app->promotors[currentPromotorIndex];
-                //newPromotor->valid = 1;
-                //newPromotor->pid = fork();
-                //if(newPromotor->pid == 0){
+                Promotor* newPromotor = &app->promotors[currentPromotorIndex];
+
+                pipe(app->promotors[currentPromotorIndex].fd);
+                int fork_id  = fork();
+                if(fork_id == 0){
                     // child process
-                    // execute the promoter
-                    // TODO: execute the promoter logic
-                    //char* args[] = {"./", line, NULL};
-                    //execv(args[0], args);
-                //}else{
+                    // dealing with the child process and file descriptors
+                    close(1);
+                    dup(app->promotors[currentPromotorIndex].fd[1]);
+                    close(app->promotors[currentPromotorIndex].fd[1]);
+                    close(app->promotors[currentPromotorIndex].fd[0]);
+
+                    // executing the promoter preventing the overflow of process execution with sleep
+                    sleep(1);
+                    execl(app->promotors[currentPromotorIndex].name, app->promotors[currentPromotorIndex].name, (char *)NULL);
+                    exit(0);
+                }else{
                     // parent process
-                //    strcpy(newPromotor->name, line);
-                    //printf("      > Promotor created %d: %s \n", newPromotor->pid, newPromotor->name);
-                //}
+                    //clean \n from the newPromotor->name
+                    if(line[strlen(line)-1] == '\n'){
+                        line[strlen(line)-1] = '\0';
+                    }
+
+                    strcpy(newPromotor->name, line);
+                    app->promotors[currentPromotorIndex].pid = fork_id;
+                    app->promotors[currentPromotorIndex].valid = 1;
+                    printf("      > Promotor created %d: %s \n", newPromotor->pid, newPromotor->name);
+                }
             }
             currentPromotorIndex++;
         }

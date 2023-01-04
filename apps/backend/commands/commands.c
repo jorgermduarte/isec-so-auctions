@@ -581,6 +581,9 @@ void exec_command_prom(struct Backend *app)
         currentPromotor++;
         current++;
     }
+
+    printf(" > Active promotions: \n");
+    displayPromotions(app->promotions);
 }
 
 // update promoters

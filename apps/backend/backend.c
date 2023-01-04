@@ -51,16 +51,20 @@ void *promotions_duration_handler(void *pdata)
 {
     Backend *app = (Backend *)pdata;
     while(app->threads.running){
+
         struct Promotions *current = app->promotions;
+
+        // do verification for each promotion
         while(current != NULL){
             if(current->valid == 1){
-                if(current->time == 0){
+                if(current->time <= 0){
+
                     printf(">   Promotion %s has ended.\n", current->category);
                     current->valid = 0;
 
                     int current_user_index = 0;
                     while( current_user_index < app->config->max_users_allowed) {
-                        if (app->users[current_user_index].pid > 0 && app->users[current_user_index].username != "") {
+                        if (app->users[current_user_index].pid > 0) {
                             // send notification to user
                             char messsage_to_frontend[255] = "The promotion ";
                             strcat(messsage_to_frontend, current->category);
@@ -70,28 +74,32 @@ void *promotions_duration_handler(void *pdata)
                         }
                         current_user_index++;
                     }
-
-                    if(current->next != NULL){
-                        //printf(" removing promotion from list... %d\n", current->id);
-                        current = current->next;
-                        removePromotion(&app->promotions, current->prev->id);
-                    }else{
-                        //printf(">   No more promotions.\n");
-                        removePromotion(&app->promotions, current->id);
-                        current = NULL;
-                    }
-
-                    //printf(" promotions status: \n");
-                    //displayPromotions(app->promotions);
-
+                    current = current->next;
                 }else{
-                    current->time--;
+                    current->time -= 1;
                     current = current->next;
                 }
             }else{
+                //int id_delete = current->id;
+                //removePromotion(&app->promotions, id_delete);
                 current = current->next;
             }
         }
+
+        //cleanup promotions
+        /*struct Promotions *current2 = app->promotions;
+        while(current2 != NULL){
+            if(current2->valid == 0){
+                //int id_delete = current2->id;
+                //current2 = current2->next;
+                //removePromotion(&app->promotions, id_delete);
+               // printf(" >  [CLEAN] Promotion %d has been removed.\n", id_delete);
+
+            }else{
+                current2 = current2->next;
+            }
+        }*/
+
         sleep(1);
     }
 }

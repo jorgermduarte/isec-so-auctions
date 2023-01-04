@@ -64,6 +64,7 @@ void addPromotion(struct Promotions **head, struct Promotions *promotion)
         {
             tail->next = promotion;
             promotion->prev = tail;
+            promotion->next = NULL;
         }
     }
 }
@@ -75,22 +76,25 @@ void removePromotion(struct Promotions **head, int id)
     {
         if (current->id == id)
         {
-            if (current->prev != NULL)
-            {
-                current->prev->next = current->next;
-            }
-            if (current->next != NULL)
-            {
-                current->next->prev = current->prev;
-            }
 
-            if (current->prev == NULL && current->next == NULL)
+            if (current->prev == NULL && current->next == NULL) // there is no more promotions ( only one);
             {
                 *head = NULL;
+            }else if (current->prev == NULL && current->next != NULL) // the first promotion but have more in the list
+            {
+                *head = current->next;
+                current->next->prev = NULL; // set the prev of the next promotion to NULL
+            }else if (current->next != NULL && current->prev != NULL) // if is in the middle
+            {
+                current->prev->next = current->next;
+                current->next->prev = current->prev;
+            }
+            else if( current->prev != NULL && current->next == NULL) // if is the last promotion
+            {
+                current->prev->next = NULL;
             }
 
             free(current);
-
             break;
         }
         current = current->next;

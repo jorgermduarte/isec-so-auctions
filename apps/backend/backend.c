@@ -63,12 +63,17 @@ void *promotions_duration_handler(void *pdata)
                     // TODO: notify users that a promotion has ended
 
                     if(current->next != NULL){
+                        //printf(" removing promotion from list... %d\n", current->id);
                         current = current->next;
                         removePromotion(&app->promotions, current->prev->id);
                     }else{
+                        //printf(">   No more promotions.\n");
                         removePromotion(&app->promotions, current->id);
                         current = NULL;
                     }
+
+                    //printf(" promotions status: \n");
+                    //displayPromotions(app->promotions);
 
                 }else{
                     current->time--;
@@ -233,6 +238,12 @@ void load_users_from_file(char *filename, Backend *app)
     loadUsersFile(app->config->f_users);
 
     printf("    >  Loading users from file: %s\n", filename);
+
+    //iterate all users list and clean all of pids
+    for (int i = 0; i < app->config->max_users_allowed; i++)
+    {
+        users[i].pid = -1;
+    }
 
     // Read the file line by line
     char line[256];

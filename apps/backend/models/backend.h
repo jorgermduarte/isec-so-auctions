@@ -46,7 +46,7 @@ Backend* bootstrap();
 
 void load_items_from_file(char* filename, Backend* app);
 void load_users_from_file(char *filename, Backend* app);
-void *load_promoters_from_file(char *filename, Promotor *promoters);
+void load_promoters_from_file(char *filename, Backend* app);
 
 void *command_thread_handler(void *pdata);
 void *frontend_communication_receiver_handler(void *pdata);

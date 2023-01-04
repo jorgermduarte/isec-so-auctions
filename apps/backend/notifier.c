@@ -25,7 +25,7 @@ void send_message_frontend(char *message, int pid){
     sprintf(pid_string, "%d", pid);
     strcat(pipe_name, FRONTEND_FIFO_NAME_BASE);
     strcat(pipe_name, pid_string);
-    printf("        > Sending message to the following pipe: %s\n",pipe_name);
+    //printf("        > Sending message to the following pipe: %s\n",pipe_name);
 
     //create pipe if it doesn't exist
     if (mkfifo(pipe_name, 0666) == -1)

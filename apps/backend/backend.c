@@ -28,9 +28,8 @@ Backend *bootstrap()
     // load users from file
     load_users_from_file(app->config->f_users, app);
 
-    Promotor promoters[app->config->max_promotors_allowed];
-    load_promoters_from_file(app->config->f_promotors, &promoters[0]);
-    app->promotors = promoters;
+    // load promoters from file
+    load_promoters_from_file(app->config->f_promotors, app);
 
     memset(app->frontendPids, 0, sizeof(int));
 
@@ -345,23 +344,17 @@ void load_items_from_file(char *filename, Backend *app)
     if (fp == NULL)
         exit(EXIT_FAILURE);
 
-    Item *itemsDefine;
+    Item *itemsDefine = malloc(sizeof(Item) * app->config->max_auctions_active);
     int i = 0;
 
     while ((read = getline(&line, &len, fp)) != -1)
     {
-        if (i == 0)
-        {
-            itemsDefine = (Item *)malloc(sizeof(Item));
-        }
-
         Item it;
         // the %20s is to avoid buffer overflows
         sscanf(line, "%20s %20s %20s %d %d %d %20s %20s", it.identifier, it.name, it.category, &it.current_value,  &it.buy_now_value, &it.duration, it.seller_name, it.bidder_name);
         it.active = 1;
         it.unique_id = i;
         itemsDefine[i] = it;
-        itemsDefine = (Item *)realloc(itemsDefine, sizeof(Item) * (i + 2));
         printf("    >  Loading item: %s for %d seconds\n", it.name, it.duration);
         i++;
     }
@@ -375,33 +368,53 @@ void load_items_from_file(char *filename, Backend *app)
         free(line);
 }
 
-void *load_promoters_from_file(char *filename, Promotor *promoters)
-{
+void load_promoters_from_file(char *filename, Backend *app) {
     FILE *fp;
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
-    int i = 0;
+
+    Promotor *promoters = malloc(sizeof(Promotor) * app->config->max_promotors_allowed);
+
+    //clean all promoters
+    for (int i = 0; i < app->config->max_promotors_allowed; i++) {
+        Promotor it;
+        it.pid = -1;
+        it.valid = 0;
+        promoters[i] = it;
+    }
+
     fp = fopen(filename, "r");
     if (fp == NULL)
         exit(EXIT_FAILURE);
 
-    while ((read = getline(&line, &len, fp)) != -1)
-    {
+    int current = 0;
+    while ((read = getline(&line, &len, fp)) != -1) {
         Promotor it;
         // the %20s is to avoid buffer overflow
         memset(it.name, 0, sizeof(it.name));
 
         sscanf(line, "%20s", it.name);
 
-        it.valid = 1;
-        promoters[i++] = it;
+        strcpy(promoters[current].name, it.name);
+        promoters[current].valid = 1;
+        current++;
     }
 
+    // display the promoters
+    printf("    >  Loaded promoters from file: %s\n", filename);
+    for (int i = 0; i < app->config->max_promotors_allowed; i++) {
+        if (promoters[i].valid) {
+            printf("        > promoter: %s\n", promoters[i].name);
+        }
+    }
+
+    app->promotors = promoters;
     fclose(fp);
     if (line)
         free(line);
 }
+
 
 int get_max_promoter_fd(struct Backend* app)
 {

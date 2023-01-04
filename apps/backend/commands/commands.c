@@ -461,7 +461,7 @@ void exec_command_buy(struct Backend* app, int pid_response, struct string_list 
             // find the item
             int item_index = 0;
             bool foundItem = false;
-            struct Promotions *active_promotion = malloc(sizeof(struct Promotions));
+            struct Promotions *active_promotion;
             
             while( item_index < app->config->max_auctions_active){
                 if( app->items[item_index].active == 1 && app->items[item_index].unique_id == itemIdentifier){

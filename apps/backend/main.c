@@ -147,11 +147,9 @@ int main(int argc, char *argv[])
                 if (FD_ISSET(app->promotors[i].fd[0], &read_fds))
                 {
                     char buffer[260];
-                    int size = read(app->promotors[i].fd[0], buffer, 256);
+                    int size = read(app->promotors[i].fd[0], buffer, 255);
                     if (size > 0)
                     {
-                        struct Promotions *new_promotion = malloc(sizeof(struct Promotions));
-
                         char* token = strtok(buffer, " ");
                         char* category = NULL;
                         char* amount_string = NULL;
@@ -196,7 +194,7 @@ int main(int argc, char *argv[])
                             }
 
 
-
+                            struct Promotions *new_promotion = malloc(sizeof(struct Promotions));
                             new_promotion->id = id;
                             new_promotion->valid = 1;
                             new_promotion->value = atoi(amount_string);
@@ -230,16 +228,54 @@ int main(int argc, char *argv[])
                                     if(app->users[current_user_index_f].pid > 0){
                                         //printf(" > sending message to frontend application with pid %d.\n", app->users[current_user_index_f].pid);
 
-                                        char message_to_send_2[255] = "[PROM] ";
+                                        char message_to_send_2[250] = "[PROM] ";
                                         //strcat(message_to_send, category);
+
+                                        // iterate category characters and add until \0
+                                        for(int x = 0; x < strlen(category); x++){
+                                            if(category[x] == '\0' || category[x] == '\n' || category[x] == '\r'){
+                                                break;
+                                            }
+                                            char c[2];
+                                            c[0] = category[x];
+                                            c[1] = '\0';
+                                            strcat(message_to_send_2, c);
+                                        }
+
                                         strcat(message_to_send_2, " with ");
-                                        strcat(message_to_send_2, amount_string);
+
+                                        // iterate amount_string characters and add until \0
+
+                                        for(int x = 0; x < strlen(amount_string); x++){
+                                            if(amount_string[x] == '\0' || amount_string[x] == '\n' || amount_string[x] == '\r'){
+                                                break;
+                                            }
+                                            char c[2];
+                                            c[0] = amount_string[x];
+                                            c[1] = '\0';
+                                            strcat(message_to_send_2, c);
+                                        }
+
+
                                         strcat(message_to_send_2, " percent off for ");
-                                        strcat(message_to_send_2, time_string);
-                                        strcat(message_to_send_2, " seconds.");
-                                        // printf(" preparing to send the message: %s - to all frontend applications.\n", message_to_send);
+
+                                        // iterate time_string characters and add until \0
+
+                                        for(int x = 0; x < strlen(time_string); x++){
+                                            if(time_string[x] == '\0' || time_string[x] == '\n' || time_string[x] == '\r'){
+                                                break;
+                                            }
+                                            char c[2];
+                                            c[0] = time_string[x];
+                                            c[1] = '\0';
+                                            strcat(message_to_send_2, c);
+                                        }
+
+                                        strcat(message_to_send_2, " seconds");
+                                        //printf(" preparing to send the message: %s - to all frontend applications.\n", message_to_send_2);
                                         // TODO: proms disappear after sending the message to the frontend applications
-                                        //send_message_frontend(message_to_send_2, app->users[current_user_index_f].pid);
+                                        send_message_frontend(message_to_send_2, app->users[current_user_index_f].pid);
+                                        printf("> message sent to frontend application with pid %d.\n", app->users[current_user_index_f].pid);
                                     }
 
                                     current_user_index_f++;
@@ -254,10 +290,13 @@ int main(int argc, char *argv[])
                         // printf(" > Reached the end of the pipe for promoter %s - p%d \n", app->promotors[i].name, app->promotors[i].pid);
                         app->promotors[i].valid = 0;
                         kill(app->promotors[i].pid, SIGINT);
+                        app->promotors[i].pid = 0;
+
                     }
                 }
             }
         }
+        //printf(" -> next loop\n");
         sleep(1);
     } while (1);
 }

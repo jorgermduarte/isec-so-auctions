@@ -183,6 +183,19 @@ int main(int argc, char *argv[])
                                 }
                             }
 
+                            for(int x = 0; x < strlen(amount_string); x++){
+                                if(amount_string[x] == ' ' || amount_string[x] == '\n' || amount_string[x] == '\r'){
+                                    amount_string[x] = '\0';
+                                }
+                            }
+
+                            for(int x = 0; x < strlen(category); x++){
+                                if(category[x] == ' ' || category[x] == '\n' || category[x] == '\r'){
+                                    category[x] = '\0';
+                                }
+                            }
+
+
 
                             new_promotion->id = id;
                             new_promotion->valid = 1;
@@ -212,22 +225,23 @@ int main(int argc, char *argv[])
 
                             if(strlen(category) > 0 && strlen(amount_string) > 0 && strlen(time_string) > 0){
 
-                                char message_to_send[255] = "New promotion for ";
-                                strcat(message_to_send, category);
-                                strcat(message_to_send, " with ");
-                                strcat(message_to_send, amount_string);
-                                strcat(message_to_send, " percent off for ");
-                                strcat(message_to_send, time_string);
-                                strcat(message_to_send, " seconds.");
-                               // printf(" preparing to send the message: %s - to all frontend applications.\n", message_to_send);
-
                                 int current_user_index_f = 0;
                                 while( current_user_index_f < app->config->max_users_allowed){
-                                    if(app->users[current_user_index_f].pid != -1 && app->users[current_user_index_f].pid != 0 && app->users[current_user_index_f].pid > 0){
+                                    if(app->users[current_user_index_f].pid > 0){
                                         //printf(" > sending message to frontend application with pid %d.\n", app->users[current_user_index_f].pid);
+
+                                        char message_to_send_2[255] = "[PROM] ";
+                                        //strcat(message_to_send, category);
+                                        strcat(message_to_send_2, " with ");
+                                        strcat(message_to_send_2, amount_string);
+                                        strcat(message_to_send_2, " percent off for ");
+                                        strcat(message_to_send_2, time_string);
+                                        strcat(message_to_send_2, " seconds.");
+                                        // printf(" preparing to send the message: %s - to all frontend applications.\n", message_to_send);
                                         // TODO: proms disappear after sending the message to the frontend applications
-                                        //send_message_frontend(message_to_send, app->users[current_user_index_f].pid);
+                                        //send_message_frontend(message_to_send_2, app->users[current_user_index_f].pid);
                                     }
+
                                     current_user_index_f++;
                                 }
 

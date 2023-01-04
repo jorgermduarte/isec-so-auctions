@@ -132,17 +132,29 @@ void exec_command_exit()
 
 void exec_command_sell(struct string_list *arguments)
 {
-    if (arguments != NULL && arguments->string != NULL)
-    {
-        printf("Selling the %s from the category %s with a base price of %d€ and a buy now of %d€ during %d secconds \n",
-               arguments->string, arguments->next->string, atoi(arguments->next->next->string), atoi(arguments->next->next->next->string), atoi(arguments->next->next->next->next->string));
+    if( arguments != NULL && arguments->next != NULL && arguments->next->next != NULL && arguments->next->next->next != NULL && arguments->next->next->next->next != NULL){
 
-        char message[256];
-        sprintf(message, "sell %s %s %s %s %s", arguments->string, arguments->next->string, arguments->next->next->string, arguments->next->next->next->string, arguments->next->next->next->next->string);
-        send_message_backend(message);
-    }   
-    else
-    {
-        printf("     > Failed to execute the add command, please provide a value, example: sell martelo ferramentas 10 100 60\n");
+        if(verify_is_number(arguments->next->next->string) && verify_is_number(arguments->next->next->next->string) && verify_is_number(arguments->next->next->next->next->string) ){
+            printf("     > Executing the sell command, with the values: %s %s %s %s\n", arguments->string, arguments->next->string, arguments->next->next->string, arguments->next->next->next->string);
+
+            char message[256] = "sell ";
+            strcat(message, arguments->string); // name
+            strcat(message, " ");
+            strcat(message, arguments->next->string); // category
+            strcat(message, " ");
+            strcat(message, arguments->next->next->string); // valor
+            strcat(message, " ");
+            strcat(message, arguments->next->next->next->string); // buy now
+            strcat(message, " ");
+            strcat(message, arguments->next->next->next->next->string); // time
+
+            send_message_backend(message);
+        }
+        else{
+            printf("     > Failed to execute the sell command, please provide four values, example: sell <name> <category> <price> <buynow> <time>\n");
+        }
+
+    }else{
+        printf("     > Failed to execute the sell command, please provide four values, example: sell <name> <category> <price> <buynow> <time>\n");
     }
 }

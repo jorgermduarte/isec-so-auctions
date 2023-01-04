@@ -435,12 +435,15 @@ void exec_command_sell(struct Backend *app, int pid_response, struct string_list
         if (added == 0)
             sprintf(message_to_send, "Auction for %s did not start because of the maximum of auctions reached.\n", item_for_sale.name);
 
-        for (int i = 0; i < app->config->max_users_allowed; i++)
-        {
-            if(app->frontendPids[i] != 0){
-                send_message_frontend(message_to_send, app->users[i].pid);
+        // notify the frontend apps that a new auction has started
+        int current_frontend_index = 0;
+        while(current_frontend_index < app->config->max_users_allowed){
+            if(app->users[current_frontend_index].pid > 0 ){
+                send_message_frontend(message_to_send, app->users[current_frontend_index].pid);
             }
+            current_frontend_index++;
         }
+
 
         reset_heartbit_counter(app, pid_response);
     }

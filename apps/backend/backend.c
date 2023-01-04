@@ -43,7 +43,7 @@ Backend *bootstrap()
     pthread_create(&app->threads.pthread_frontend_requests, NULL, frontend_communication_receiver_handler, app);
     pthread_create(&app->threads.pthread_frontend_heartbit, NULL, frontend_heartbit_handler, app);
     pthread_create(&app->threads.pthread_auctions_duration, NULL, auctions_duration_handler, app);
-    //pthread_create(&app->threads.pthread_promotions_duration, NULL, promotions_duration_handler, app);
+    pthread_create(&app->threads.pthread_promotions_duration, NULL, promotions_duration_handler, app);
 
     return app;
 }
@@ -61,11 +61,13 @@ void *promotions_duration_handler(void *pdata)
                     printf(">   Promotion %s has ended.\n", current->value);
                     current->valid = 0;
                     current = current->next;
-                    removePromotion(&app->promotions, current->prev->id);
+                    //removePromotion(&app->promotions, current->prev->id);
                 }else{
                     current->time--;
                     current = current->next;
                 }
+            }else{
+                current = current->next;
             }
         }
         sleep(1);

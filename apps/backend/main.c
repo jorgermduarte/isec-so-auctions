@@ -5,6 +5,7 @@
 #include <pthread.h>
 #include <sys/select.h>
 #include "commands/initializer.h"
+#include "notifier.h"
 #include "../../shared/helpers/helpers.h"
 
 Backend *app;
@@ -150,6 +151,7 @@ int main(int argc, char *argv[])
                     if (size > 0)
                     {
                         struct Promotions *new_promotion = malloc(sizeof(struct Promotions));
+                        char message_to_send[256] = "";
 
                         char* token = strtok(buffer, " ");
                         char *category = token;
@@ -168,11 +170,38 @@ int main(int argc, char *argv[])
                         new_promotion->time = time;
                         strcpy(new_promotion->category, category);
 
-                        addPromotion(&app->promotions, new_promotion);
+                        struct Promotions *existentPromotion = getPromotionByCategory(&app->promotions, category);
+                        if(existentPromotion != NULL && existentPromotion->valid == 1){
+                            printf("\n[ Promoter %s with pid %d ] New promotion for %s category is duplicated. Skip this promotion.\n\n", app->promotors[i].name, app->promotors[i].pid, category, amount, time);
+                            continue;
+                        }else if(existentPromotion != NULL && existentPromotion->valid == 0){
+                            updatePromotion(&app->promotions, existentPromotion->id, new_promotion);
+                        }else{
+                            addPromotion(&app->promotions, new_promotion);    
+                        }
 
                         rbash();
                         printf("\n[ Promoter %s with pid %d ] New promotion for %s category started with %d%% off during %d seconds.\n\n", app->promotors[i].name, app->promotors[i].pid, category, amount, time);
                         creset();
+
+                        char * string_amount = malloc(sizeof(char)*9);
+                        char * string_time = malloc(sizeof(char)*9);
+                        sprintf(string_amount, "%d", amount);
+                        sprintf(string_time, "%d", time);
+
+                        strcat(message_to_send, "New promotion for ");
+                        strcat(message_to_send, category);
+                        strcat(message_to_send, " category started with ");
+                        strcat(message_to_send, string_amount);
+                        strcat(message_to_send, " percent off during ");
+                        strcat(message_to_send, string_time);
+                        strcat(message_to_send, " seconds.");
+
+                        for(int i = 0; i < app->config->max_users_allowed; i++){
+                            if(app->frontendPids[i] != 0){
+                                send_message_frontend(message_to_send, app->frontendPids[i]);
+                            }
+                        }
                     }
                     else
                     {

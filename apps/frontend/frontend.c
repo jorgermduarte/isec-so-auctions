@@ -56,13 +56,13 @@ void* backend_communication_receiver_handler(void* data)
             int read_size = sizeof(msg) + 1;
             int size = read(client->fifo_fd, &msg, read_size);
             if(size > 0) {
-                printf("\n [Message from backend]: %s\n", msg.response.result);
+                printf("[Message from backend]: %s\n", msg.response.result);
 
                 //verify if the message is a response to a login request
                 if(strcmp(msg.response.result, "LOGIN_SUCCESS") == 0){
                     //set the user as logged in
                     auth.is_logged_in = 1;
-                    printf("\n [INFO] YOU HAVE LOGGED IN SUCCESSFULLY\n");
+                    printf("[INFO] YOU HAVE LOGGED IN SUCCESSFULLY\n");
                 }
             }
         }

@@ -48,7 +48,6 @@ Backend *bootstrap()
     return app;
 }
 
-
 void *promotions_duration_handler(void *pdata)
 {
     Backend *app = (Backend *)pdata;
@@ -60,7 +59,18 @@ void *promotions_duration_handler(void *pdata)
                     printf(">   Promotion %s has ended.\n", current->category);
                     current->valid = 0;
 
-                    // TODO: notify users that a promotion has ended
+                    int current_user_index = 0;
+                    while( current_user_index < app->config->max_users_allowed) {
+                        if (app->users[current_user_index].pid > 0 && app->users[current_user_index].username != "") {
+                            // send notification to user
+                            char messsage_to_frontend[255] = "The promotion ";
+                            strcat(messsage_to_frontend, current->category);
+                            strcat(messsage_to_frontend, " has ended.");
+                            send_message_frontend(messsage_to_frontend, app->users[current_user_index].pid);
+
+                        }
+                        current_user_index++;
+                    }
 
                     if(current->next != NULL){
                         //printf(" removing promotion from list... %d\n", current->id);
@@ -90,10 +100,6 @@ void *promotions_duration_handler(void *pdata)
 void *auctions_duration_handler(void *pdata)
 {
     Backend *app = (Backend *)pdata;
-
-    // TODO: reach the final of the auction and remove budget from the bidder and add it to the seller
-    // TODO: if a promotion is on going remove the percentage from the bidder value and maintain the bidded value to the seller
-    // TODO: when buy now is triggered do the exact same thing.
 
     while (app->threads.running)
     {

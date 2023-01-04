@@ -25,7 +25,7 @@ void send_message_frontend(char *message, int pid){
     sprintf(pid_string, "%d", pid);
     strcat(pipe_name, FRONTEND_FIFO_NAME_BASE);
     strcat(pipe_name, pid_string);
-    //printf("        > Sending message to the following pipe: %s\n",pipe_name);
+    printf("        > Sending message to the following pipe: %s\n",pipe_name);
 
     //create pipe if it doesn't exist
     if (mkfifo(pipe_name, 0666) == -1)
@@ -35,12 +35,12 @@ void send_message_frontend(char *message, int pid){
             //printf("    > [ERR] FRONTEND FIFO ALREADY EXISTS\n");
         }
     }
-    //printf("        > Opening pipe\n");
-    //printf("     > Writing message to pipe: %s\n", msg.response.result);
-    // Now open in write mode and write
     fd = open(pipe_name,O_RDWR);
-    //printf("     > pipe opened\n");
-    write(fd, &msg, sizeof(msg));
-    //printf("        > Msg written successfully on pipe: %s\n",pipe_name);
+    if (fd == -1)
+    {
+        printf("    > [ERR] OPENING FRONTEND FIFO\n");
+    }else{
+        write(fd, &msg, sizeof(msg));
+    }
     close(fd);
 }

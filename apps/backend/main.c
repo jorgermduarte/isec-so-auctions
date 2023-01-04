@@ -152,68 +152,88 @@ int main(int argc, char *argv[])
                     {
                         struct Promotions *new_promotion = malloc(sizeof(struct Promotions));
 
-                        char message_to_send[256] = "";
-
                         char* token = strtok(buffer, " ");
-                        char *category = token;
-                        token = strtok(NULL, " ");
-                        int amount = atoi(token);
-                        token = strtok(NULL, " ");
-                        int time = atoi(token);
+                        char* category = NULL;
+                        char* amount_string = NULL;
+                        char* time_string = NULL;
 
-                        int id = 0;
-                        if(app->promotions != NULL){
-                            id = getTailPromotions(app->promotions)->id + 1;
-                        }
-
-                        new_promotion->id = id;
-                        new_promotion->valid = 1;
-                        new_promotion->value = amount;
-                        new_promotion->time = time;
-                        strcpy(new_promotion->category, category);
-
-                        struct Promotions *existentPromotion = getPromotionByCategory(&app->promotions, category);
-
-                        if(existentPromotion != NULL && existentPromotion->valid == 1){
-                            rbash();
-                            printf("\n[ Promoter %s with pid %d ] New promotion for %s category is duplicated. Skip this promotion.\n\n", app->promotors[i].name, app->promotors[i].pid, category);
-                            creset();
-                            continue;
-                        }else if(existentPromotion != NULL && existentPromotion->valid == 0){
-                            rbash();
-                            printf("\n[ Promoter %s with pid %d ] New promotion for %s category is duplicated. But the previous promotion is invalid. Update this promotion.\n", app->promotors[i].name, app->promotors[i].pid, category);
-                            creset();
-                            updatePromotion(&app->promotions, existentPromotion->id, new_promotion);
-                        }else{
-                            rbash();
-                            printf("\n[ Promoter %s with pid %d ] New promotion for %s category with value %d and time %d.\n", app->promotors[i].name, app->promotors[i].pid, category, amount, time);
-                            creset();
-                            addPromotion(&app->promotions, new_promotion);
-                        }
-
-                        //rbash();
-                        //printf("\n[ Promoter %s with pid %d ] New promotion for %s category started with %d%% off during %d seconds.\n\n", app->promotors[i].name, app->promotors[i].pid, category, amount, time);
-                        //creset();
-
-                        /*
-                        char * string_amount = malloc(sizeof(char)*9);
-                        char * string_time = malloc(sizeof(char)*9);
-                        sprintf(string_amount, "%d", amount);
-                        sprintf(string_time, "%d", time);
-
-                        strcat(message_to_send, "New promotion for ");
-                        strcat(message_to_send, category);
-                        strcat(message_to_send, " category started with ");
-                        strcat(message_to_send, string_amount);
-                        strcat(message_to_send, " percent off during ");
-                        strcat(message_to_send, string_time);
-                        strcat(message_to_send, " seconds.");
-
-                        for(int i = 0; i < app->config->max_users_allowed; i++){
-                            if(app->frontendPids[i] != 0){
-                                send_message_frontend(message_to_send, app->frontendPids[i]);
+                        if (token != NULL) {
+                            category = token;
+                            token = strtok(NULL, " ");
+                            if (token != NULL) {
+                                amount_string = token;
+                                token = strtok(NULL, " ");
+                                if (token != NULL) {
+                                    time_string = token;
+                                }
                             }
-                        }*/
+                        }
+
+                        if(category != NULL || amount_string != NULL || time_string != NULL) {
+
+                            int id = 0;
+                            if(app->promotions != NULL){
+                                id = getTailPromotions(app->promotions)->id + 1;
+                            }
+
+                            //iterate time_string if we find a " " set as \0
+                            for(int x = 0; x < strlen(time_string); x++){
+                                if(time_string[x] == ' ' || time_string[x] == '\n' || time_string[x] == '\r'){
+                                    time_string[x] = '\0';
+                                }
+                            }
+
+
+                            new_promotion->id = id;
+                            new_promotion->valid = 1;
+                            new_promotion->value = atoi(amount_string);
+                            new_promotion->time = atoi(time_string);
+
+                            strcpy(new_promotion->category, category);
+
+                            struct Promotions *existentPromotion = getPromotionByCategory(&app->promotions, category);
+
+                            if(existentPromotion != NULL && existentPromotion->valid == 1){
+                                rbash();
+                                printf("[ Promoter %s with pid %d ] New promotion for %s category is duplicated. Skip this promotion.\n\n", app->promotors[i].name, app->promotors[i].pid, category);
+                                creset();
+                                continue;
+                            }else if(existentPromotion != NULL && existentPromotion->valid == 0){
+                                rbash();
+                                printf("[ Promoter %s with pid %d ] New promotion for %s category is duplicated. But the previous promotion is invalid. Update this promotion.\n", app->promotors[i].name, app->promotors[i].pid, category);
+                                creset();
+                                updatePromotion(&app->promotions, existentPromotion->id, new_promotion);
+                            }else{
+                                rbash();
+                                printf("[ Promoter %s with pid %d ] New promotion for %s category with value %s and time %s.\n", app->promotors[i].name, app->promotors[i].pid, category, amount_string, time_string);
+                                creset();
+                                addPromotion(&app->promotions, new_promotion);
+                            }
+
+                            if(strlen(category) > 0 && strlen(amount_string) > 0 && strlen(time_string) > 0){
+
+                                char message_to_send[255] = "New promotion for ";
+                                strcat(message_to_send, category);
+                                strcat(message_to_send, " with ");
+                                strcat(message_to_send, amount_string);
+                                strcat(message_to_send, " percent off for ");
+                                strcat(message_to_send, time_string);
+                                strcat(message_to_send, " seconds.");
+                               // printf(" preparing to send the message: %s - to all frontend applications.\n", message_to_send);
+
+                                int current_user_index_f = 0;
+                                while( current_user_index_f < app->config->max_users_allowed){
+                                    if(app->users[current_user_index_f].pid != -1 && app->users[current_user_index_f].pid != 0 && app->users[current_user_index_f].pid > 0){
+                                        //printf(" > sending message to frontend application with pid %d.\n", app->users[current_user_index_f].pid);
+                                        // TODO: proms disappear after sending the message to the frontend applications
+                                        //send_message_frontend(message_to_send, app->users[current_user_index_f].pid);
+                                    }
+                                    current_user_index_f++;
+                                }
+
+                            }
+
+                        }
                     }
                     else
                     {

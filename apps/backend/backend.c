@@ -52,16 +52,24 @@ Backend *bootstrap()
 void *promotions_duration_handler(void *pdata)
 {
     Backend *app = (Backend *)pdata;
-
     while(app->threads.running){
         struct Promotions *current = app->promotions;
         while(current != NULL){
             if(current->valid == 1){
                 if(current->time == 0){
-                    printf(">   Promotion %s has ended.\n", current->value);
+                    printf(">   Promotion %s has ended.\n", current->category);
                     current->valid = 0;
-                    current = current->next;
-                    //removePromotion(&app->promotions, current->prev->id);
+
+                    // TODO: notify users that a promotion has ended
+
+                    if(current->next != NULL){
+                        current = current->next;
+                        removePromotion(&app->promotions, current->prev->id);
+                    }else{
+                        removePromotion(&app->promotions, current->id);
+                        current = NULL;
+                    }
+
                 }else{
                     current->time--;
                     current = current->next;
@@ -82,19 +90,20 @@ void *auctions_duration_handler(void *pdata)
     // TODO: if a promotion is on going remove the percentage from the bidder value and maintain the bidded value to the seller
     // TODO: when buy now is triggered do the exact same thing.
 
-    char message_to_send[256] = "";
+    sleep(3);
     while (app->threads.running)
     {
         for (int i = 0; i < app->config->max_auctions_active; i++)
         {
             if (app->items[i].active == 1)
             {
-                if (app->items[i].duration == 0)
+                if (app->items[i].duration <= 0)
                 {
-                    app->items[i].active = 0;
+                    printf(" detected an item: %s with the duration: %d\n", app->items[i].name, app->items[i].duration);
 
-                    struct Promotions *active_promotion = malloc(sizeof(struct Promotions));
-                    active_promotion = getPromotionByCategory(&app->promotions, app->items[i].category);
+                    char message_to_send[256] = "";
+
+                    struct Promotions *active_promotion = getPromotionByCategory(&app->promotions, app->items[i].category);
 
                     // send message to all frontend applications
                     int current_user = 0;
@@ -102,7 +111,7 @@ void *auctions_duration_handler(void *pdata)
                     {
                         if (app->users[current_user].pid != 0 && app->users[current_user].pid != -1)
                         {
-                            if(strcmp(app->users[current_user].username, app->items[i].seller_name) == 0 && strcmp(app->items[i].bidder_name, "-") != 0) // is the seller of the item
+                            if(strcmp(app->users[current_user].username, app->items[i].seller_name) == 0 && strcmp(app->items[i].bidder_name, "-") != 0) // is the seller of the item and have a bidder on the item
                             {
                                 // update seller balance with the current value aka the sell price.
                                 int userBalance = getUserBalance(app->users[current_user].username);
@@ -112,7 +121,8 @@ void *auctions_duration_handler(void *pdata)
                                 //notify the seller than is auction is over
                                 sprintf(message_to_send,"Your auction for the item %s has ended. The winner is %s with a bid of %d ", app->items[i].name, app->items[i].bidder_name, app->items[i].current_value);
                                 send_message_frontend(message_to_send,app->users[current_user].pid);
-                            }else{
+                            }
+                            else{
                                 if(strcmp(app->users[current_user].username, app->items[i].bidder_name) == 0) // is the winner of the auction
                                 {
                                     int userBalance = getUserBalance(app->users[current_user].username);
@@ -121,16 +131,19 @@ void *auctions_duration_handler(void *pdata)
                                         discount_percentage = (discount_percentage - (double)active_promotion->value) / 100;
                                     }else{
                                         discount_percentage = 1;
-                                    }                                                                                      
+                                    }
+
                                     int amount_to_pay = app->items[i].current_value * discount_percentage;
 
-                                    printf(">   Paying %d€ by the bidder.\n", amount_to_pay, app->items[i].bidder_name);
+                                    printf(">   Paying %d€ by the bidder %s.\n", amount_to_pay, app->items[i].bidder_name);
                                     updateUserBalance(app->users[current_user].username, userBalance - amount_to_pay);
+
                                     //notify the winner than is auction is over
                                     sprintf(message_to_send, "You won the auction for the item %s with a bid of %d but payed %d",app->items[i].name, app->items[i].current_value, amount_to_pay);
                                     send_message_frontend(message_to_send, app->users[current_user].pid);
+
                                 }else{
-                                    if(strcmp(app->users[current_user].username, "") != 0){
+                                    if(strcmp(app->users[current_user].username, "") != 0 && app->users[current_user].pid != 0 && app->users[current_user].pid != -1 ){ // is a user that is not the seller or the winner
                                         sprintf(message_to_send, "Auction for item %s has ended.", app->items[i].name);
                                         send_message_frontend(message_to_send, app->users[current_user].pid);
                                     } else {
@@ -141,12 +154,13 @@ void *auctions_duration_handler(void *pdata)
                         }
                         current_user++;
                     }
-                    break;
+
+                    app->items[i].active = 0;
+
                 }
                 app->items[i].duration--;
             }
         }
-        sleep(1);
     }
 }
 
@@ -331,7 +345,7 @@ void load_items_from_file(char *filename, Backend *app)
         it.unique_id = i;
         itemsDefine[i] = it;
         itemsDefine = (Item *)realloc(itemsDefine, sizeof(Item) * (i + 2));
-        printf("    >  Loading item: %s\n", it.name);
+        printf("    >  Loading item: %s for %d seconds\n", it.name, it.duration);
         i++;
     }
     fclose(fp);
@@ -460,17 +474,3 @@ User get_logged_in_user(Backend *app, pid_t pid, char *seller)
     }
 }
 
-int getBiggestItemId(Backend *app){
-    int biggestId = 0;
-    int current = 0;
-    while(current < app->config->max_auctions_active){
-        if(app->items[current].active == 1){
-            int currentId = app->items[current].unique_id;
-            if(currentId > biggestId){
-                biggestId = currentId;
-            }
-        }
-        current++;
-    }
-    return biggestId;
-}

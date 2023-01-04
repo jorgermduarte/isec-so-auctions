@@ -146,11 +146,12 @@ int main(int argc, char *argv[])
             {
                 if (FD_ISSET(app->promotors[i].fd[0], &read_fds))
                 {
-                    char buffer[25];
+                    char buffer[260];
                     int size = read(app->promotors[i].fd[0], buffer, 256);
                     if (size > 0)
                     {
                         struct Promotions *new_promotion = malloc(sizeof(struct Promotions));
+
                         char message_to_send[256] = "";
 
                         char* token = strtok(buffer, " ");
@@ -164,6 +165,7 @@ int main(int argc, char *argv[])
                         if(app->promotions != NULL){
                             id = getTailPromotions(app->promotions)->id + 1;
                         }
+
                         new_promotion->id = id;
                         new_promotion->valid = 1;
                         new_promotion->value = amount;
@@ -171,19 +173,29 @@ int main(int argc, char *argv[])
                         strcpy(new_promotion->category, category);
 
                         struct Promotions *existentPromotion = getPromotionByCategory(&app->promotions, category);
+
                         if(existentPromotion != NULL && existentPromotion->valid == 1){
-                            printf("\n[ Promoter %s with pid %d ] New promotion for %s category is duplicated. Skip this promotion.\n\n", app->promotors[i].name, app->promotors[i].pid, category, amount, time);
+                            rbash();
+                            printf("\n[ Promoter %s with pid %d ] New promotion for %s category is duplicated. Skip this promotion.\n\n", app->promotors[i].name, app->promotors[i].pid, category);
+                            creset();
                             continue;
                         }else if(existentPromotion != NULL && existentPromotion->valid == 0){
+                            rbash();
+                            printf("\n[ Promoter %s with pid %d ] New promotion for %s category is duplicated. But the previous promotion is invalid. Update this promotion.\n", app->promotors[i].name, app->promotors[i].pid, category);
+                            creset();
                             updatePromotion(&app->promotions, existentPromotion->id, new_promotion);
                         }else{
-                            addPromotion(&app->promotions, new_promotion);    
+                            rbash();
+                            printf("\n[ Promoter %s with pid %d ] New promotion for %s category with value %d and time %d.\n", app->promotors[i].name, app->promotors[i].pid, category, amount, time);
+                            creset();
+                            addPromotion(&app->promotions, new_promotion);
                         }
 
-                        rbash();
-                        printf("\n[ Promoter %s with pid %d ] New promotion for %s category started with %d%% off during %d seconds.\n\n", app->promotors[i].name, app->promotors[i].pid, category, amount, time);
-                        creset();
+                        //rbash();
+                        //printf("\n[ Promoter %s with pid %d ] New promotion for %s category started with %d%% off during %d seconds.\n\n", app->promotors[i].name, app->promotors[i].pid, category, amount, time);
+                        //creset();
 
+                        /*
                         char * string_amount = malloc(sizeof(char)*9);
                         char * string_time = malloc(sizeof(char)*9);
                         sprintf(string_amount, "%d", amount);
@@ -201,7 +213,7 @@ int main(int argc, char *argv[])
                             if(app->frontendPids[i] != 0){
                                 send_message_frontend(message_to_send, app->frontendPids[i]);
                             }
-                        }
+                        }*/
                     }
                     else
                     {

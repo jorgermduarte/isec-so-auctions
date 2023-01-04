@@ -379,6 +379,21 @@ void exec_add_money_to_user(struct Backend *app, int pid_response, struct string
     }
 }
 
+int getBiggestItemId(Backend *app){
+    int biggestId = 0;
+    int current = 0;
+    while(current < app->config->max_auctions_active){
+        if(app->items[current].active == 1){
+            int currentId = app->items[current].unique_id;
+            if(currentId > biggestId){
+                biggestId = currentId;
+            }
+        }
+        current++;
+    }
+    return biggestId;
+}
+
 void exec_command_sell(struct Backend *app, int pid_response, struct string_list *arguments)
 {
     if (arguments != NULL && pid_response != -1 && arguments->string != NULL)

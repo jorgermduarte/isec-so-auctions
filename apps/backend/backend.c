@@ -42,8 +42,8 @@ Backend *bootstrap()
     pthread_create(&app->threads.pthread_backend_commands, NULL, command_thread_handler, app);
     pthread_create(&app->threads.pthread_frontend_requests, NULL, frontend_communication_receiver_handler, app);
     pthread_create(&app->threads.pthread_frontend_heartbit, NULL, frontend_heartbit_handler, app);
-    pthread_create(&app->threads.pthread_auctions_duration, NULL, auctions_duration_handler, app);
     pthread_create(&app->threads.pthread_promotions_duration, NULL, promotions_duration_handler, app);
+    pthread_create(&app->threads.pthread_auctions_duration, NULL, auctions_duration_handler, app);
 
     return app;
 }
@@ -90,77 +90,77 @@ void *auctions_duration_handler(void *pdata)
     // TODO: if a promotion is on going remove the percentage from the bidder value and maintain the bidded value to the seller
     // TODO: when buy now is triggered do the exact same thing.
 
-    sleep(3);
     while (app->threads.running)
     {
-        for (int i = 0; i < app->config->max_auctions_active; i++)
-        {
-            if (app->items[i].active == 1)
+        int i = 0;
+        while(i < app->config->max_auctions_active){
+            if (app->items[i].active == 1 & app->items[i].duration == 0)
             {
-                if (app->items[i].duration <= 0)
+                printf(" detected an item: %s with the duration: %d\n", app->items[i].name, app->items[i].duration);
+                app->items[i].active = 0;
+
+                char message_to_send[256] = "";
+
+                struct Promotions *active_promotion = getPromotionByCategory(&app->promotions, app->items[i].category);
+
+                // send message to all frontend applications
+                int current_user = 0;
+                while ( current_user < app->config->max_users_allowed)
                 {
-                    printf(" detected an item: %s with the duration: %d\n", app->items[i].name, app->items[i].duration);
-
-                    char message_to_send[256] = "";
-
-                    struct Promotions *active_promotion = getPromotionByCategory(&app->promotions, app->items[i].category);
-
-                    // send message to all frontend applications
-                    int current_user = 0;
-                    while ( current_user < app->config->max_users_allowed)
+                    if (app->users[current_user].pid != 0 && app->users[current_user].pid != -1)
                     {
-                        if (app->users[current_user].pid != 0 && app->users[current_user].pid != -1)
+                        if(strcmp(app->users[current_user].username, app->items[i].seller_name) == 0 && strcmp(app->items[i].bidder_name, "-") != 0) // is the seller of the item and have a bidder on the item
                         {
-                            if(strcmp(app->users[current_user].username, app->items[i].seller_name) == 0 && strcmp(app->items[i].bidder_name, "-") != 0) // is the seller of the item and have a bidder on the item
-                            {
-                                // update seller balance with the current value aka the sell price.
-                                int userBalance = getUserBalance(app->users[current_user].username);
-                                updateUserBalance(app->users[current_user].username, userBalance + app->items[i].current_value);
-                                printf(">   Adding %d€ to the seller %s account.\n", app->items[i].current_value, app->users[current_user].username);
+                            // update seller balance with the current value aka the sell price.
+                            int userBalance = getUserBalance(app->users[current_user].username);
+                            updateUserBalance(app->users[current_user].username, userBalance + app->items[i].current_value);
+                            printf(">   Adding %d€ to the seller %s account.\n", app->items[i].current_value, app->users[current_user].username);
 
-                                //notify the seller than is auction is over
-                                sprintf(message_to_send,"Your auction for the item %s has ended. The winner is %s with a bid of %d ", app->items[i].name, app->items[i].bidder_name, app->items[i].current_value);
-                                send_message_frontend(message_to_send,app->users[current_user].pid);
+                            //notify the seller than is auction is over
+                            sprintf(message_to_send,"Your auction for the item %s has ended. The winner is %s with a bid of %d ", app->items[i].name, app->items[i].bidder_name, app->items[i].current_value);
+                            send_message_frontend(message_to_send,app->users[current_user].pid);
+                        }
+                        else if(strcmp(app->users[current_user].username, app->items[i].bidder_name) == 0){ // is the winner of the auction
+
+                            int userBalance = getUserBalance(app->users[current_user].username);
+                            double discount_percentage = 100;
+
+                            if(active_promotion != NULL){
+                                discount_percentage = (discount_percentage - (double)active_promotion->value) / 100;
+                            }else{
+                                discount_percentage = 1;
                             }
-                            else{
-                                if(strcmp(app->users[current_user].username, app->items[i].bidder_name) == 0) // is the winner of the auction
-                                {
-                                    int userBalance = getUserBalance(app->users[current_user].username);
-                                    double discount_percentage = 100;
-                                    if(active_promotion != NULL){
-                                        discount_percentage = (discount_percentage - (double)active_promotion->value) / 100;
-                                    }else{
-                                        discount_percentage = 1;
-                                    }
 
-                                    int amount_to_pay = app->items[i].current_value * discount_percentage;
+                            int amount_to_pay = app->items[i].current_value * discount_percentage;
 
-                                    printf(">   Paying %d€ by the bidder %s.\n", amount_to_pay, app->items[i].bidder_name);
-                                    updateUserBalance(app->users[current_user].username, userBalance - amount_to_pay);
+                            printf(">   Paying %d€ by the bidder %s.\n", amount_to_pay, app->items[i].bidder_name);
+                            updateUserBalance(app->users[current_user].username, userBalance - amount_to_pay);
 
-                                    //notify the winner than is auction is over
-                                    sprintf(message_to_send, "You won the auction for the item %s with a bid of %d but payed %d",app->items[i].name, app->items[i].current_value, amount_to_pay);
-                                    send_message_frontend(message_to_send, app->users[current_user].pid);
+                            //notify the winner than is auction is over
+                            sprintf(message_to_send, "You won the auction for the item %s with a bid of %d but payed %d",app->items[i].name, app->items[i].current_value, amount_to_pay);
+                            send_message_frontend(message_to_send, app->users[current_user].pid);
 
-                                }else{
-                                    if(strcmp(app->users[current_user].username, "") != 0 && app->users[current_user].pid != 0 && app->users[current_user].pid != -1 ){ // is a user that is not the seller or the winner
-                                        sprintf(message_to_send, "Auction for item %s has ended.", app->items[i].name);
-                                        send_message_frontend(message_to_send, app->users[current_user].pid);
-                                    } else {
-                                        printf("    > Auction for item %s has ended.\n", app->items[i].name);
-                                    }
-                                }
+                        }
+                        else{
+                            if(strcmp(app->users[current_user].username, "") != 0 && app->users[current_user].pid != 0 && app->users[current_user].pid != -1 ){ // is a user that is not the seller or the winner
+                                sprintf(message_to_send, "Auction for item %s has ended.", app->items[i].name);
+                                send_message_frontend(message_to_send, app->users[current_user].pid);
+                            } else {
+                                printf("    > Auction for item %s has ended.\n", app->items[i].name);
                             }
                         }
-                        current_user++;
                     }
-
-                    app->items[i].active = 0;
-
+                    current_user++;
                 }
+
+
+            }else if( app->items[i].active == 1){
                 app->items[i].duration--;
             }
+            i++;
         }
+        sleep(1);
+
     }
 }
 

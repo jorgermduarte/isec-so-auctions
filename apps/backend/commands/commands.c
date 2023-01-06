@@ -584,6 +584,7 @@ void exec_command_prom(struct Backend *app)
 
     printf(" > Active promotions: \n");
     displayPromotions(app->promotions);
+
 }
 
 // update promoters
@@ -658,6 +659,7 @@ void exec_command_reprom(struct Backend* app)
         }
 
     }
+
 }
 
 // cancel promoter

@@ -9,6 +9,7 @@
 #include "../config/config.h"
 #include "../../../shared/helpers/pipes.h"
 #include "promotions.h"
+#include "locks.h"
 
 typedef struct Threads
 {
@@ -38,6 +39,8 @@ typedef struct Backend
     Threads threads;
     Pipes pipeBackend;
     int frontendPids[20];
+
+    struct locks locks;
 
     int fifo_b;
 } Backend;

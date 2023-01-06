@@ -22,6 +22,9 @@ Backend *bootstrap()
     app->config = config;
     app->promotions = NULL;
 
+    // define locks
+    pthread_mutex_init(&app->locks.promotions_lock, NULL);
+
     // Read data from files
     load_items_from_file(app->config->f_items, app);
 

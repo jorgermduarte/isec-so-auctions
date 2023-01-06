@@ -140,10 +140,15 @@ int main(int argc, char *argv[])
             kill(getpid(), SIGINT);
         }
 
+        // Lock the mutex
+        pthread_mutex_lock(&app->locks.promotions_lock);
+
         for (int i = 0; i < app->config->max_promotors_allowed; i++)
         {
             if (app->promotors[i].valid == 1)
             {
+
+
                 if (FD_ISSET(app->promotors[i].fd[0], &read_fds))
                 {
                     char buffer[260];
@@ -168,6 +173,8 @@ int main(int argc, char *argv[])
                         }
 
                         if(category != NULL || amount_string != NULL || time_string != NULL) {
+
+
 
                             int id = 0;
                             if(app->promotions != NULL){
@@ -272,8 +279,6 @@ int main(int argc, char *argv[])
                                         }
 
                                         strcat(message_to_send_2, " seconds");
-                                        //printf(" preparing to send the message: %s - to all frontend applications.\n", message_to_send_2);
-                                        // TODO: proms disappear after sending the message to the frontend applications
                                         send_message_frontend(message_to_send_2, app->users[current_user_index_f].pid);
                                         printf("> message sent to frontend application with pid %d.\n", app->users[current_user_index_f].pid);
                                     }
@@ -282,8 +287,8 @@ int main(int argc, char *argv[])
                                 }
 
                             }
-
                         }
+
                     }
                     else
                     {
@@ -294,8 +299,14 @@ int main(int argc, char *argv[])
 
                     }
                 }
+
+
             }
         }
+
+        // Unlock the mutex
+        pthread_mutex_unlock(&app->locks.promotions_lock);
+
         //printf(" -> next loop\n");
         sleep(1);
     } while (1);

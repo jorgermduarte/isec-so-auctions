@@ -23,7 +23,8 @@ Backend *bootstrap()
     app->promotions = NULL;
 
     // define locks
-    pthread_mutex_init(&app->locks.promotions_lock, NULL);
+    pthread_mutex_init(&app->locks.buy_lock, NULL);
+    pthread_mutex_init(&app->locks.sell_lock, NULL);
 
     // Read data from files
     load_items_from_file(app->config->f_items, app);

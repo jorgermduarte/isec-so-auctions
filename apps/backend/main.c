@@ -140,8 +140,6 @@ int main(int argc, char *argv[])
             kill(getpid(), SIGINT);
         }
 
-        // Lock the mutex
-        pthread_mutex_lock(&app->locks.promotions_lock);
 
         for (int i = 0; i < app->config->max_promotors_allowed; i++)
         {
@@ -303,9 +301,6 @@ int main(int argc, char *argv[])
 
             }
         }
-
-        // Unlock the mutex
-        pthread_mutex_unlock(&app->locks.promotions_lock);
 
         //printf(" -> next loop\n");
         sleep(1);

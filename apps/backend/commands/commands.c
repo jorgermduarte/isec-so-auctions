@@ -396,6 +396,9 @@ int getBiggestItemId(Backend *app){
 
 void exec_command_sell(struct Backend *app, int pid_response, struct string_list *arguments)
 {
+    // lock the mutex
+    pthread_mutex_lock(&app->locks.sell_lock);
+
     if (arguments != NULL && pid_response != -1 && arguments->string != NULL)
     {
         printf("     > Starting new auction for the item %s during %d \n", arguments->string, atoi(arguments->next->next->next->next->string));
@@ -447,9 +450,16 @@ void exec_command_sell(struct Backend *app, int pid_response, struct string_list
 
         reset_heartbit_counter(app, pid_response);
     }
+
+    // unlock the mutex
+    pthread_mutex_unlock(&app->locks.sell_lock);
 }
 
 void exec_command_buy(struct Backend* app, int pid_response, struct string_list *arguments){
+
+    // Lock the mutex
+    pthread_mutex_lock(&app->locks.buy_lock);
+
     if(pid_response != -1 && arguments != NULL && arguments->string != NULL && arguments->next != NULL && arguments->next->string != NULL){
         // a frontend application is trying to buy an item
         char* amount = arguments->next->string;
@@ -561,6 +571,10 @@ void exec_command_buy(struct Backend* app, int pid_response, struct string_list 
         reset_heartbit_counter(app, pid_response);
 
     }
+
+    // Unlock the mutex
+    pthread_mutex_unlock(&app->locks.buy_lock);
+
 }
 
 // ======== ONLY BACKEND COMMANDS =========
